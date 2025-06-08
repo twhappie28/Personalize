@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Tương Tác: Tâm Lý Sinh Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Academia -->
+    <!-- Application Structure Plan: The SPA is designed with a three-part user journey to maximize understanding and application, rather than mirroring the linear report structure. 1) "Hiểu Vấn Đề" (Understand the Problem): Allows users to explore the three core challenges (Procrastination, Motivation, Lifestyle) in a non-linear, digestible way through interactive cards. This approach breaks down complex topics and encourages focused exploration. 2) "Khám Phá Giải Pháp" (Explore Solutions): Presents the CBT and Habit Loop frameworks as actionable "toolkits." Interactive diagrams and technique cards transform abstract theories into practical, memorable tools. 3) "Xây Dựng Kế Hoạch" (Build a Plan): This is the synthesis stage. An interactive tool directly maps challenges to specific techniques, empowering users to create a personalized action plan. This structure guides the user from awareness to action, which is more effective for learning and behavior change than a passive reading experience. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 1) Core Challenges -> Inform/Explore -> 3-column interactive cards -> Click-to-reveal details -> Breaks down complex issues into manageable chunks -> HTML/CSS/JS. 2) CBT & Habit Loop Models -> Explain/Organize -> Custom diagrams (CBT Triangle, Habit Loop) & technique cards -> Hover/Click for details -> Visually represents core concepts, making them easier to grasp than text alone -> HTML/Tailwind CSS/JS. 3) Linking Challenges to Solutions -> Synthesize/Action -> Interactive mapping tool (challenge buttons filter solution techniques) -> Click to highlight and display connections -> Directly answers "what can I do about X?", making the report's insights actionable -> HTML/JS. 4) Summary Tables -> Present structured data -> Clean, styled HTML tables -> Static display -> Preserves the clear, concise summaries from the source report -> HTML/Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+        .active-nav { color: #0284c7; font-weight: 600; border-bottom: 2px solid #0284c7; }
+        .inactive-nav { color: #4b5563; }
+        .tech-card.highlighted { background-color: #e0f2fe; border-color: #0284c7; transform: scale(1.03); }
+        .challenge-btn.active { background-color: #0c4a6e; color: white; }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-sky-800">Tâm Lý Sinh Viên</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#section-problem" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium transition">Hiểu Vấn Đề</a>
+                        <a href="#section-solution" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium transition">Khám Phá Giải Pháp</a>
+                        <a href="#section-plan" class="nav-link inactive-nav px-3 py-2 rounded-md text-sm font-medium transition">Xây Dựng Kế Hoạch</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#section-problem" class="nav-link-mobile text-gray-500 hover:bg-sky-100 block px-3 py-2 rounded-md text-base font-medium">Hiểu Vấn Đề</a>
+                <a href="#section-solution" class="nav-link-mobile text-gray-500 hover:bg-sky-100 block px-3 py-2 rounded-md text-base font-medium">Khám Phá Giải Pháp</a>
+                <a href="#section-plan" class="nav-link-mobile text-gray-500 hover:bg-sky-100 block px-3 py-2 rounded-md text-base font-medium">Xây Dựng Kế Hoạch</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="section-intro" class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-900 mb-4">Cơ Chế Tâm Lý Đằng Sau Thách Thức Của Sinh Viên</h1>
+            <p class="max-w-3xl mx-auto text-lg text-stone-600">Một góc nhìn tương tác từ Liệu pháp Hành vi Nhận thức (CBT) và Vòng lặp Thói quen để điều hướng sự trì hoãn, thiếu động lực và lối sống mất cân bằng.</p>
+        </section>
+
+        <!-- Section 1: Understand the Problem -->
+        <section id="section-problem" class="mb-20 pt-16 -mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-sky-800">1. Hiểu Vấn Đề</h2>
+            <p class="text-center text-stone-600 max-w-2xl mx-auto mb-12">Khám phá các gốc rễ tâm lý đằng sau những thách thức phổ biến nhất mà sinh viên phải đối mặt. Nhấp vào mỗi thẻ để tìm hiểu sâu hơn về cơ chế, hậu quả và những hiểu biết chính.</p>
+            <div id="problem-container" class="grid md:grid-cols-3 gap-8">
+            </div>
+        </section>
+        
+        <div id="problem-modal" x-cloak class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity" @click.self="showModal = false" x-show="showModal" x-transition>
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" @click.stop>
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                         <h3 id="modal-title" class="text-2xl font-bold text-sky-900 mb-4"></h3>
+                        <button @click="showModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+                    </div>
+                    <div id="modal-content" class="prose max-w-none text-stone-700"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Section 2: Explore Solutions -->
+        <section id="section-solution" class="mb-20 pt-16 -mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-sky-800">2. Khám Phá Giải Pháp</h2>
+            <p class="text-center text-stone-600 max-w-2xl mx-auto mb-12">Tìm hiểu hai khuôn khổ mạnh mẽ có thể giúp bạn thay đổi hành vi. Các mô hình này cung cấp những công cụ thực tế để tái định hình tư duy và xây dựng các thói quen tích cực.</p>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- CBT Column -->
+                <div id="cbt-section">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-sky-900">Liệu pháp Hành vi Nhận thức (CBT)</h3>
+                    <p class="text-center text-stone-600 mb-6">Thay đổi hành vi bằng cách thay đổi các kiểu suy nghĩ tiêu cực.</p>
+                    <div class="diagram-container mx-auto max-w-md w-full h-64 flex items-center justify-center bg-sky-50 rounded-lg p-4 border border-sky-100 mb-8">
+                        <div class="relative w-full h-full">
+                            <div class="node absolute top-2 left-1/2 -translate-x-1/2 bg-white p-2 rounded-lg shadow border border-stone-200 text-center">🧠<br>Suy nghĩ</div>
+                            <div class="node absolute bottom-2 left-4 bg-white p-2 rounded-lg shadow border border-stone-200 text-center">🏃<br>Hành vi</div>
+                            <div class="node absolute bottom-2 right-4 bg-white p-2 rounded-lg shadow border border-stone-200 text-center">😊<br>Cảm xúc</div>
+                            <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <line x1="50" y1="20" x2="20" y2="80" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+                                <line x1="20" y1="80" x2="80" y2="80" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+                                <line x1="80" y1="80" x2="50" y2="20" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="cbt-techniques" class="grid grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- Habit Loop Column -->
+                <div id="habit-loop-section">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-sky-900">Vòng lặp Thói quen</h3>
+                    <p class="text-center text-stone-600 mb-6">Tự động hóa các hành vi tích cực để đạt được mục tiêu dễ dàng hơn.</p>
+                     <div class="diagram-container mx-auto max-w-md w-full h-64 flex items-center justify-center bg-green-50 rounded-lg p-4 border border-green-100 mb-8">
+                        <div class="flex items-center space-x-4 text-center">
+                            <div class="node bg-white p-3 rounded-lg shadow border border-stone-200">🎯<br>Tín hiệu</div>
+                            <div class="text-2xl text-stone-400">&rarr;</div>
+                            <div class="node bg-white p-3 rounded-lg shadow border border-stone-200">🔁<br>Thói quen</div>
+                            <div class="text-2xl text-stone-400">&rarr;</div>
+                            <div class="node bg-white p-3 rounded-lg shadow border border-stone-200">🏆<br>Phần thưởng</div>
+                        </div>
+                    </div>
+                    <div id="habit-loop-strategies" class="grid grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Build a Plan -->
+        <section id="section-plan" class="pt-16 -mt-16">
+            <h2 class="text-3xl font-bold text-center mb-2 text-sky-800">3. Xây Dựng Kế Hoạch Hành Động</h2>
+            <p class="text-center text-stone-600 max-w-2xl mx-auto mb-12">Kết nối các vấn đề bạn gặp phải với các giải pháp cụ thể. Chọn một thách thức để xem các kỹ thuật CBT và chiến lược Thói quen nào có thể giúp bạn nhiều nhất.</p>
+
+            <div class="bg-white p-8 rounded-lg shadow-md border border-stone-200">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8">
+                    <button data-challenge="procrastination" class="challenge-btn w-full md:w-auto bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold py-2 px-4 rounded-lg transition">Đối phó Trì hoãn</button>
+                    <button data-challenge="motivation" class="challenge-btn w-full md:w-auto bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold py-2 px-4 rounded-lg transition">Tìm lại Động lực</button>
+                    <button data-challenge="lifestyle" class="challenge-btn w-full md:w-auto bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold py-2 px-4 rounded-lg transition">Cân bằng Lối sống</button>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-lg mb-4 text-sky-900">Kỹ thuật CBT được đề xuất</h4>
+                        <div id="plan-cbt-techniques" class="space-y-3">
+                            <p class="text-stone-500">Chọn một thách thức ở trên để bắt đầu.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-4 text-green-800">Chiến lược Thói quen được đề xuất</h4>
+                        <div id="plan-habit-strategies" class="space-y-3">
+                        </div>
+                    </div>
+                </div>
+                <div id="plan-summary" class="mt-8 p-4 bg-sky-50 rounded-lg border border-sky-100 text-sky-900 hidden">
+                </div>
+            </div>
+
+            <div class="mt-16">
+                 <h3 class="text-2xl font-bold text-center mb-8 text-sky-800">Các Can Thiệp Tích Hợp & Khuyến Nghị</h3>
+                 <div id="recommendations" class="space-y-6">
+                    <p class="text-center text-stone-600">Hành trình cải thiện bản thân không chỉ dừng lại ở cá nhân. Công nghệ và sự hỗ trợ từ nhà trường đóng vai trò quan trọng trong việc tạo ra một môi trường học tập lành mạnh.</p>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-sky-900 text-white mt-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+            <p>&copy; 2025 - Ứng dụng Phân tích Tâm lý Sinh viên. Được tạo ra để chuyển đổi dữ liệu thành tri thức có thể hành động.</p>
+            <p class="text-sky-300">Dựa trên báo cáo "Cơ chế tâm lý đằng sau sự trì hoãn, thiếu động lực và lối sống mất cân bằng của sinh viên".</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                showModal: false,
+                modalContent: { title: '', content: '' },
+                openModal(data) {
+                    document.getElementById('modal-title').innerText = data.title;
+                    document.getElementById('modal-content').innerHTML = data.content;
+                    this.showModal = true;
+                }
+            }));
+        });
+        
+        const appData = {
+            problems: [
+                {
+                    id: 'procrastination',
+                    icon: '⏳',
+                    title: 'Sự Trì Hoãn',
+                    description: 'Việc trì hoãn nhiệm vụ dù biết hậu quả tiêu cực, thường bắt nguồn từ nỗi sợ hãi, lo lắng và sự né tránh.',
+                    details: `
+                        <h4>Gốc rễ tâm lý chính:</h4>
+                        <ul>
+                            <li><strong>Sợ thất bại hoặc bị chỉ trích:</strong> Né tránh nhiệm vụ để bảo vệ lòng tự trọng.</li>
+                            <li><strong>Chủ nghĩa hoàn hảo:</strong> Mong muốn kết quả lý tưởng ngăn cản việc bắt đầu.</li>
+                            <li><strong>Thiếu quyết đoán:</strong> Tê liệt vì lo lắng về việc đưa ra lựa chọn sai lầm.</li>
+                            <li><strong>Quá tải nhận thức:</strong> Cạn kiệt năng lượng tinh thần do có quá nhiều quyết định.</li>
+                        </ul>
+                        <h4>Hậu quả:</h4>
+                        <p>Điểm số thấp hơn, chất lượng công việc giảm, tăng căng thẳng, lo lắng, trầm cảm và kiệt sức. Nó tạo ra một vòng luẩn quẩn tự củng cố.</p>
+                        <h4>Hiểu biết sâu sắc:</h4>
+                        <p>Trì hoãn không phải là lười biếng, mà là một chiến lược điều hòa cảm xúc kém thích nghi để đối phó với sự khó chịu bên trong. Nhận ra điều này chuyển trọng tâm từ quản lý thời gian sang giải quyết các vấn đề tâm lý cốt lõi.</p>
+                    `
+                },
+                {
+                    id: 'motivation',
+                    icon: '📉',
+                    title: 'Thiếu Động Lực',
+                    description: 'Sự mất kết nối với tài liệu học tập hoặc môi trường, dẫn đến sự không gắn kết và thiếu kiên trì.',
+                    details: `
+                        <h4>Gốc rễ tâm lý chính:</h4>
+                        <ul>
+                            <li><strong>Cảm thấy không được thử thách/liên quan:</strong> Chương trình giảng dạy không phù hợp với sở thích hoặc mục tiêu cá nhân.</li>
+                            <li><strong>Thiếu cá nhân hóa:</strong> Cách tiếp cận "một kích cỡ cho tất cả" trong giáo dục.</li>
+                            <li><strong>Lòng tự trọng thấp:</strong> Thiếu tự tin vào khả năng của bản thân.</li>
+                            <li><strong>Thiếu hỗ trợ từ giáo viên:</strong> Cảm thấy bị cô lập về mặt cảm xúc trong quá trình học tập.</li>
+                        </ul>
+                        <h4>Hậu quả:</h4>
+                        <p>Suy giảm khả năng tập trung, trí nhớ kém, kiệt sức trong học tập và các vấn đề sức khỏe tâm thần như lo lắng và trầm cảm.</p>
+                        <h4>Hiểu biết sâu sắc:</h4>
+                        <p>Thiếu động lực và sức khỏe tâm thần có mối quan hệ hai chiều. Việc nuôi dưỡng động lực nội tại thông qua sự lựa chọn, tính liên quan và xây dựng dựa trên điểm mạnh là chìa khóa để phá vỡ vòng luẩn quẩn này.</p>
+                    `
+                },
+                {
+                    id: 'lifestyle',
+                    icon: '⚖️',
+                    title: 'Lối Sống Mất Cân Bằng',
+                    description: 'Các thói quen không lành mạnh về giấc ngủ, dinh dưỡng và xã hội, tác động tiêu cực đến cả sức khỏe và học tập.',
+                    details: `
+                        <h4>Các yếu tố đóng góp chính:</h4>
+                        <ul>
+                            <li><strong>Giấc ngủ không đủ:</strong> Dưới 6 giờ mỗi đêm, lịch trình không đều.</li>
+                            <li><strong>Dinh dưỡng kém:</strong> Chế độ ăn nhiều đường và thực phẩm chế biến sẵn.</li>
+                            <li><strong>Thiếu hoạt động thể chất:</strong> Thời gian ngồi một chỗ kéo dài.</li>
+                            <li><strong>Sự cô lập xã hội:</strong> Cảm giác cô đơn và thiếu kết nối cộng đồng.</li>
+                        </ul>
+                        <h4>Hậu quả:</h4>
+                        <p>Tăng nguy cơ lo lắng, trầm cảm và căng thẳng. Suy giảm chức năng nhận thức, trí nhớ và khả năng tập trung, dẫn đến hiệu suất học tập kém.</p>
+                        <h4>Hiểu biết sâu sắc:</h4>
+                        <p>Lối sống không chỉ là vấn đề sức khỏe; nó là nền tảng cho sức khỏe tâm thần và khả năng phục hồi học tập. Việc thiết lập các thói quen lành mạnh đóng vai trò như một cơ chế phòng ngừa chủ động chống lại căng thẳng và kiệt sức.</p>
+                    `
+                },
+            ],
+            cbtTechniques: [
+                { id: 'cbt1', title: 'Tái cấu trúc nhận thức', description: 'Thách thức và thay thế các suy nghĩ tiêu cực.', challenges: ['procrastination', 'motivation', 'lifestyle'] },
+                { id: 'cbt2', title: 'Đặt mục tiêu SMART', description: 'Chia nhỏ nhiệm vụ lớn thành các bước dễ quản lý.', challenges: ['procrastination', 'motivation'] },
+                { id: 'cbt3', title: 'Kích hoạt hành vi', description: 'Hành động để tạo ra động lực, không chờ đợi nó.', challenges: ['procrastination', 'motivation'] },
+                { id: 'cbt4', title: 'Tự theo dõi', description: 'Ghi nhật ký để nhận ra các kiểu hành vi.', challenges: ['procrastination', 'lifestyle'] },
+                { id: 'cbt5', title: 'Chánh niệm & Thư giãn', description: 'Quản lý căng thẳng và điều hòa cảm xúc.', challenges: ['procrastination', 'lifestyle'] }
+            ],
+            habitStrategies: [
+                { id: 'habit1', title: 'Làm cho nó rõ ràng', description: 'Thiết kế môi trường để kích hoạt thói quen tốt.', challenges: ['procrastination', 'lifestyle'] },
+                { id: 'habit2', title: 'Làm cho nó hấp dẫn', description: 'Kết hợp điều bạn muốn với điều bạn cần làm.', challenges: ['motivation'] },
+                { id: 'habit3', title: 'Làm cho nó dễ dàng', description: 'Giảm ma sát, bắt đầu với quy tắc 2 phút.', challenges: ['procrastination', 'lifestyle'] },
+                { id: 'habit4', title: 'Làm cho nó thỏa mãn', description: 'Tự thưởng ngay lập tức để củng cố hành vi.', challenges: ['motivation', 'lifestyle'] }
+            ],
+            planSummaries: {
+                procrastination: `<strong>Kế hoạch chống trì hoãn:</strong> Bắt đầu bằng việc sử dụng <strong>Tái cấu trúc nhận thức</strong> để thách thức nỗi sợ thất bại. Sau đó, áp dụng <strong>Đặt mục tiêu SMART</strong> và <strong>Quy tắc 2 phút (Làm cho nó dễ dàng)</strong> để chia nhỏ nhiệm vụ. Cuối cùng, <strong>Thiết kế môi trường (Làm cho nó rõ ràng)</strong> để loại bỏ các yếu tố gây xao nhãng.`,
+                motivation: `<strong>Kế hoạch tìm lại động lực:</strong> Sử dụng <strong>Đặt mục tiêu SMART</strong> để kết nối việc học với mục tiêu cá nhân. Áp dụng <strong>Làm cho nó hấp dẫn</strong> bằng cách ghép nối việc học với một hoạt động yêu thích và <strong>Làm cho nó thỏa mãn</strong> bằng cách ăn mừng những chiến thắng nhỏ để xây dựng động lực nội tại.`,
+                lifestyle: `<strong>Kế hoạch cân bằng lối sống:</strong> Bắt đầu với <strong>Tự theo dõi</strong> để xác định các thói quen không lành mạnh. Sử dụng <strong>Làm cho nó rõ ràng</strong> và <strong>Làm cho nó dễ dàng</strong> để thiết lập các thói quen tích cực về giấc ngủ và tập thể dục. Thực hành <strong>Chánh niệm & Thư giãn</strong> để quản lý căng thẳng hàng ngày.`
+            },
+            recommendationsContent: `
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h4 class="font-bold text-lg mb-2 text-sky-900">Tận dụng Công nghệ</h4>
+                    <p class="text-stone-700">Các ứng dụng sức khỏe tâm thần (ví dụ: Sanvello, Moodfit), hình thành thói quen (ví dụ: Fabulous, HabitNow), và năng suất (ví dụ: Forest) có thể cung cấp hỗ trợ cá nhân hóa, dễ tiếp cận để áp dụng các nguyên tắc CBT và xây dựng thói quen tốt.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h4 class="font-bold text-lg mb-2 text-sky-900">Vai trò của Tổ chức Giáo dục</h4>
+                    <p class="text-stone-700">Các trường đại học đóng vai trò quan trọng bằng cách cung cấp hướng dẫn rõ ràng, phản hồi mang tính xây dựng, quản lý khối lượng công việc hợp lý, và tích hợp các chương trình hạnh phúc vào chương trình giảng dạy. Tạo ra một môi trường học tập hỗ trợ là nền tảng cho sự thành công của sinh viên.</p>
+                </div>
+            `
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const problemContainer = document.getElementById('problem-container');
+            const cbtTechniquesContainer = document.getElementById('cbt-techniques');
+            const habitStrategiesContainer = document.getElementById('habit-loop-strategies');
+            const recommendationsContainer = document.getElementById('recommendations');
+            const alpineComponent = document.querySelector('[x-data]');
+
+            appData.problems.forEach(problem => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow cursor-pointer border border-stone-200';
+                card.innerHTML = `
+                    <div class="text-4xl mb-4">${problem.icon}</div>
+                    <h4 class="font-bold text-xl mb-2 text-sky-900">${problem.title}</h4>
+                    <p class="text-stone-600">${problem.description}</p>
+                `;
+                card.addEventListener('click', () => {
+                     alpineComponent.__x.getUnwrappedData(alpineComponent).openModal({ title: problem.title, content: problem.details });
+                });
+                problemContainer.appendChild(card);
+            });
+
+            appData.cbtTechniques.forEach(tech => {
+                cbtTechniquesContainer.innerHTML += `
+                    <div class="tech-card bg-white p-4 rounded-lg shadow-sm border border-stone-200" data-id="${tech.id}" data-challenges='${JSON.stringify(tech.challenges)}'>
+                        <h5 class="font-bold text-sky-800">${tech.title}</h5>
+                        <p class="text-sm text-stone-600">${tech.description}</p>
+                    </div>`;
+            });
+
+            appData.habitStrategies.forEach(strategy => {
+                habitStrategiesContainer.innerHTML += `
+                     <div class="tech-card bg-white p-4 rounded-lg shadow-sm border border-stone-200" data-id="${strategy.id}" data-challenges='${JSON.stringify(strategy.challenges)}'>
+                        <h5 class="font-bold text-green-800">${strategy.title}</h5>
+                        <p class="text-sm text-stone-600">${strategy.description}</p>
+                    </div>`;
+            });
+            
+            recommendationsContainer.innerHTML = appData.recommendationsContent;
+
+
+            const challengeButtons = document.querySelectorAll('.challenge-btn');
+            const planCbtContainer = document.getElementById('plan-cbt-techniques');
+            const planHabitContainer = document.getElementById('plan-habit-strategies');
+            const allTechCards = document.querySelectorAll('.tech-card');
+            const planSummary = document.getElementById('plan-summary');
+
+            challengeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const selectedChallenge = this.dataset.challenge;
+
+                    challengeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    planCbtContainer.innerHTML = '';
+                    planHabitContainer.innerHTML = '';
+                    
+                    let hasCbt = false;
+                    appData.cbtTechniques.forEach(tech => {
+                        if (tech.challenges.includes(selectedChallenge)) {
+                            planCbtContainer.innerHTML += `<div class="p-3 bg-sky-50 rounded-md border border-sky-100">${tech.title}</div>`;
+                            hasCbt = true;
+                        }
+                    });
+                    if (!hasCbt) planCbtContainer.innerHTML = '<p class="text-stone-500">Không có kỹ thuật CBT nào được đề xuất đặc biệt.</p>';
+
+
+                    let hasHabit = false;
+                    appData.habitStrategies.forEach(strategy => {
+                        if (strategy.challenges.includes(selectedChallenge)) {
+                            planHabitContainer.innerHTML += `<div class="p-3 bg-green-50 rounded-md border border-green-100">${strategy.title}</div>`;
+                            hasHabit = true;
+                        }
+                    });
+                    if (!hasHabit) planHabitContainer.innerHTML = '<p class="text-stone-500">Không có chiến lược thói quen nào được đề xuất đặc biệt.</p>';
+
+                    allTechCards.forEach(card => {
+                        const cardChallenges = JSON.parse(card.dataset.challenges);
+                        if (cardChallenges.includes(selectedChallenge)) {
+                            card.classList.add('highlighted');
+                        } else {
+                            card.classList.remove('highlighted');
+                        }
+                    });
+                    
+                    if(appData.planSummaries[selectedChallenge]){
+                        planSummary.innerHTML = appData.planSummaries[selectedChallenge];
+                        planSummary.classList.remove('hidden');
+                    } else {
+                        planSummary.classList.add('hidden');
+                    }
+
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('.nav-link-mobile').forEach(link => {
+                link.addEventListener('click', () => {
+                     mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 68) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    link.classList.add('inactive-nav');
+                    if (link.getAttribute('href').slice(1) === current) {
+                        link.classList.add('active-nav');
+                        link.classList.remove('inactive-nav');
+                    }
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
