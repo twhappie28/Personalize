@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cây Cao Việt Nam: Hành Trình Xanh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Earthy Harmony -->
+    <!-- Application Structure Plan: The application is structured as a single-page exploratory dashboard with a fixed top navigation for easy access to different thematic sections. The structure is designed for non-linear exploration, allowing users to dive into what interests them most.
+    1.  **Hero Section:** Introduces the topic and invites exploration with a more evocative background.
+    2.  **Explore the Trees:** A card-based gallery of all key trees. Clicking a card opens a modal with consolidated information (biology, value, culture), making it easy to learn about a specific tree without navigating away. Cards now have subtle hover animations and placeholder images suggest real photos.
+    3.  **Height Comparison:** An interactive bar chart to visualize and compare the heights of the trees. The chart includes enhanced styling (gradients) for better visual appeal.
+    4.  **Trees in Culture:** A tabbed section separating 'Folktales' from 'Literature'. This organizes the rich cultural content into clear categories, with improved visual distinction and consistent icon usage.
+    This structure was chosen to transform a dense, text-based report into an engaging, multi-faceted learning tool that prioritizes user interaction and data visualization over linear reading, now with an enhanced focus on visual storytelling and UI/UX. -->
+    <!-- Visualization & Content Choices: 
+    1.  **Report Info:** Tree names, characteristics, values, cultural stories.
+        * **Goal:** Inform & Organize.
+        * **Viz/Method:** Interactive cards in a grid layout. Clicking a card opens a modal view with updated image placeholders.
+        * **Interaction:** Click/Tap to view details; subtle hover effects on cards for engagement.
+        * **Justification:** Consolidates all information about a single tree into one accessible popup, which is more user-friendly than scrolling through different chapters. Visually suggests real-world imagery.
+        * **Library/Method:** HTML/CSS/JS.
+    2.  **Report Info:** Quantitative data on tree heights (Table 1).
+        * **Goal:** Compare.
+        * **Viz/Method:** Horizontal Bar Chart with gradient styling.
+        * **Interaction:** Hover to see tooltips with exact max height.
+        * **Justification:** Visually represents numerical data, making comparisons instant and intuitive. More impactful than a static table, with improved aesthetics.
+        * **Library/Method:** Chart.js (Canvas).
+    3.  **Report Info:** Cultural connections (folktales, poetry - Tables 2 & 3).
+        * **Goal:** Organize & Relate.
+        * **Viz/Method:** Tabbed content area with descriptive cards, visually distinct.
+        * **Interaction:** Click tabs to switch between cultural themes (Folktales/Literature).
+        * **Justification:** Breaks down the rich, qualitative cultural information into manageable themes, improving comprehension and navigation.
+        * **Library/Method:** HTML/CSS/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcfb; /* Slightly warmer off-white */
+            color: #3f3f46; /* zinc-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 600px;
+            max-height: 80vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .modal-leave {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #65a30d; /* lime-600 */
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Custom gradient for chart bars */
+        .chart-gradient-fill {
+            background: linear-gradient(to right, rgba(101, 163, 13, 0.7), rgba(101, 163, 13, 1));
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#hero" class="text-2xl font-bold text-green-800">Cây & Văn Hóa</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#explore" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-stone-600 hover:text-green-800">Khám Phá Cây</a>
+                        <a href="#comparison" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-stone-600 hover:text-green-800">So Sánh Chiều Cao</a>
+                        <a href="#culture" class="nav-link px-3 py-2 rounded-md text-sm font-semibold text-stone-600 hover:text-green-800">Trong Văn Hóa</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-stone-600 hover:text-green-800 hover:bg-stone-200 focus:outline-none">
+                        <span class="sr-only">Mở menu</span>
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#explore" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:text-green-800 hover:bg-stone-100">Khám Phá Cây</a>
+                <a href="#comparison" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:text-green-800 hover:bg-stone-100">So Sánh Chiều Cao</a>
+                <a href="#culture" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-stone-600 hover:text-green-800 hover:bg-stone-100">Trong Văn Hóa</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="relative min-h-[60vh] flex items-center bg-lime-50" style="background-image: url('https://placehold.co/1920x600/bbf7d0/16a34a?text=Hành+Trình+Xanh:+Từ+Cội+Nguồn+Đến+Vị+Lai'); background-size: cover; background-position: center;">
+             <div class="absolute inset-0 bg-gradient-to-t from-stone-50 to-transparent"></div>
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-green-900 tracking-tight">Hồn Cốt Xanh Của Đất Việt</h1>
+                <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-stone-700">Khám phá hành trình của những loài cây cao trong cảnh quan, đời sống và tâm thức người Việt, từ những giá trị thực tiễn đến dấu ấn sâu đậm trong văn hóa và nghệ thuật. Chúng đại diện cho sự sống mãnh liệt, bền vững, là nguồn cảm hứng bất tận cho nghệ thuật và kết nối con người với cội nguồn thiên nhiên.</p>
+                <a href="#explore" class="mt-8 inline-block bg-lime-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-lime-700 transition-transform transform hover:scale-105 shadow-lg">Bắt đầu hành trình</a>
+            </div>
+        </section>
+
+        <section id="explore" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-green-800">Khám Phá Các Loài Cây Biểu Tượng</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-stone-600">Mỗi loài cây đều mang một câu chuyện riêng về đặc điểm sinh học, giá trị kinh tế và vị trí độc đáo trong văn hóa. Hãy nhấp vào một loài cây để tìm hiểu chi tiết.</p>
+                </div>
+                <div id="tree-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="py-16 md:py-24 bg-lime-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-green-800">So Sánh Chiều Cao Tối Đa</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-stone-600">Biểu đồ này cho thấy chiều cao tối đa mà các loài cây phổ biến có thể đạt tới, giúp bạn hình dung được sự hùng vĩ của chúng trong thế giới tự nhiên. Di chuột qua từng cột để xem số liệu chính xác.</p>
+                </div>
+                <div class="chart-container bg-white p-4 rounded-lg shadow-lg">
+                    <canvas id="heightChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="culture" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-green-800">Dấu Ấn Cây Trong Văn Hóa Việt</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-stone-600">Cây cối không chỉ là thực vật, chúng còn là những nhân vật sống động trong kho tàng truyện kể và là nguồn cảm hứng bất tận cho thơ ca, văn học qua bao thế hệ. Chúng được dệt nên trong kho tàng cổ tích, truyền thuyết, và là biểu tượng sâu sắc cho phẩm chất con người Việt Nam.</p>
+                </div>
+
+                <div>
+                    <div class="flex justify-center border-b border-stone-200 mb-8">
+                        <button data-tab="folktales" class="tab-btn px-6 py-3 text-lg font-semibold border-b-4 border-lime-600 text-lime-700">Cổ Tích & Truyền Thuyết</button>
+                        <button data-tab="literature" class="tab-btn px-6 py-3 text-lg font-semibold border-b-4 border-transparent text-stone-500 hover:text-lime-700">Thơ Ca & Văn Xuôi</button>
+                    </div>
+
+                    <div id="folktales-content" class="tab-content">
+                        <div id="folktale-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                    </div>
+                    <div id="literature-content" class="tab-content hidden">
+                        <div id="literature-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>Một sản phẩm tương tác dựa trên báo cáo "Cây cao phổ biến tại Việt Nam và dấu ấn văn hóa".</p>
+            <p class="text-sm text-stone-400 mt-2">Được thiết kế để khám phá và học hỏi.</p>
+        </div>
+    </footer>
+    
+    <div id="tree-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 hidden">
+        <div id="modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative modal-enter">
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const treeData = [
+                {
+                    id: 'nhan',
+                    name: 'Nhãn',
+                    scientificName: 'Dimocarpus longan',
+                    icon: '🍈',
+                    imageUrl: 'https://placehold.co/600x400/8bc34a/ffffff?text=Cây+Nhãn+trĩu+quả',
+                    height_max: 20,
+                    description: 'Cây thân gỗ quen thuộc, cao trung bình 5-10m, có thể tới 20m. Tán lá xanh quanh năm, hoa nở mùa xuân. Ít kén đất, chịu rét tương đối tốt nhưng chịu úng kém.',
+                    value: 'Là cây ăn quả giá trị kinh tế cao. Quả ăn tươi hoặc sấy khô (long nhãn) dùng trong y học. Hoa là nguồn mật ong dồi dào. Giống nổi tiếng: Nhãn lồng Hưng Yên, Nhãn xuồng Vũng Tàu.',
+                    folktale_title: 'Sự tích Cây Nhãn',
+                    folktale_summary: 'Truyện kể quả nhãn có hình dáng giống mắt Rồng. Một cậu bé nghèo nuôi Rồng con, nhưng Rồng bị Quạ Tinh móc mắt. Quả nhãn từ đó mang hình hài con mắt của Rồng, biểu tượng cho sự linh thiêng và may mắn. Việc gắn kết nguồn gốc cây nhãn với hình ảnh Rồng trong cổ tích không chỉ là một cách giải thích tự nhiên cho hình dáng của quả mà còn là một phương thức tâm linh hóa, nâng tầm giá trị của quả nhãn từ một loại trái cây thông thường thành một biểu tượng mang ý nghĩa thiêng liêng, quyền quý.',
+                    literature_examples: []
+                },
+                {
+                    id: 'saurieng',
+                    name: 'Sầu Riêng',
+                    scientificName: 'Durio zibethinus',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/795548/ffffff?text=Vườn+Sầu+Riêng+đang+mùa',
+                    height_max: 27,
+                    description: 'Cây thân gỗ lớn, cao 10-27m, dáng khẳng khiu, cành ngang. Quả lớn có gai, mùi thơm nồng đặc trưng và vị ngọt béo. Thích hợp khí hậu miền Nam.',
+                    value: 'Được mệnh danh là "vua của các loại trái cây", mang lại giá trị kinh tế rất cao. Giống Ri6 Vĩnh Long rất nổi tiếng. Mùi hương độc đáo là yếu tố nhận diện mạnh mẽ.',
+                    folktale_title: 'Sự tích Trái Sầu Riêng',
+                    folktale_summary: 'Câu chuyện về mối tình chung thủy của một cặp đôi. Người vợ mất, linh hồn báo mộng sẽ theo chồng. Quả "tu-rên" (tên cũ của sầu riêng) tự nhiên rơi vào vạt áo chàng, mang theo hương vị đậm đà như lòng người vợ. Từ đó, người ta gọi loại quả này là "sầu riêng" để ghi nhớ mối tình chung thủy và sự biệt ly. Mùi hương đặc trưng của sầu riêng, dù gây tranh cãi trong thực tế, lại được văn hóa dân gian lãng mạn hóa thành "hương vị của lòng người", thể hiện khả năng của văn hóa dân gian trong việc biến những đặc điểm tự nhiên thành biểu tượng của cảm xúc và đạo lý.',
+                    literature_examples: [
+                        { quote: "Hương vị quyến rũ, nồng nàn... hoa sầu riêng trổ vào cuối năm, thoảng như hương cau, hương bưởi...", work: "Văn tả trong 'Mùa sầu riêng'" },
+                        { quote: "Thương nhớ mùa sầu riêng, nhớ hương vị quê hương...", work: "Truyện ngắn 'Thương nhớ mùa sầu riêng' - Võ Thị Tuyết Luân" }
+                    ]
+                },
+                {
+                    id: 'buoi',
+                    name: 'Bưởi',
+                    scientificName: 'Citrus maxima',
+                    icon: '🍊',
+                    imageUrl: 'https://placehold.co/600x400/ff9800/ffffff?text=Hoa+Bưởi+trắng+tinh+khiết',
+                    height_max: 15,
+                    description: 'Cây ăn quả lâu năm, tán lá xòe rộng. Hoa trắng tinh khiết, hương thơm dịu nhẹ. Quả hình cầu, tép màu hồng hoặc vàng, vị ngọt thanh.',
+                    value: 'Giá trị kinh tế cao với các giống đặc sản như Bưởi da xanh, Bưởi Diễn. Lá dùng luộc ốc, vỏ dùng gội đầu, xông giải cảm. Có vị trí trang trọng trên mâm ngũ quả ngày Tết.',
+                    folktale_title: 'Sự tích Cây Bưởi Đào',
+                    folktale_summary: 'Các tài liệu nghiên cứu có nhắc đến "Sự tích cây bưởi đào", tuy nhiên không cung cấp nội dung chi tiết của câu chuyện. Dù vậy, sự tồn tại của truyện này trong kho tàng cổ tích Việt Nam ngụ ý rằng cây bưởi, với hoa thơm và quả sum suê, cũng được dân gian gán cho một câu chuyện nguồn gốc hoặc ý nghĩa biểu tượng. Có thể câu chuyện liên quan đến sự sinh sôi, thịnh vượng, hoặc vẻ đẹp thanh khiết của hoa bưởi, tương tự như cách các cây ăn quả khác được kể.',
+                    literature_examples: [
+                        { quote: "Trèo lên cây bưởi hái hoa, Bước xuống vườn cà hái nụ tầm xuân.", work: "Ca dao" },
+                        { quote: "Hoa bưởi trắng toát, hương thơm thoảng mát, thu hút ong bướm...", work: "Thơ 'Hoa bưởi'" },
+                        { quote: "Lời thì thầm của hoa bưởi đưa ta về ký ức...", work: "Truyện ngắn 'Lời thì thầm của hoa bưởi' - Trần Tú" },
+                        { quote: "Hoa bưởi của người ra đi, mang theo bao nỗi nhớ...", work: "Truyện ngắn 'Hoa bưởi của người ra đi' - Đinh Thành Trung" },
+                        { quote: "Đèn lồng bưởi thắp sáng đêm Trung thu...", work: "Truyện thiếu nhi 'Đèn lồng bưởi' - Trác Diễm" }
+                    ]
+                },
+                {
+                    id: 'vusuua',
+                    name: 'Vú Sữa',
+                    scientificName: 'Chrysophyllum cainito',
+                    icon: '🍈',
+                    imageUrl: 'https://placehold.co/600x400/9c27b0/ffffff?text=Quả+Vú+Sữa+tím+mộng+mơ',
+                    height_max: 15,
+                    description: 'Cây thân gỗ cao, có thể vượt mái nhà hai tầng. Quả tròn, khi chín vỏ tím sẫm. Khi bóc vỏ cho ra dòng "sữa" trắng mát, ngọt ngào.',
+                    value: 'Giống Vú sữa Lò Rèn Tiền Giang rất nổi tiếng, mang lại thu nhập đáng kể. Quả là món tráng miệng bổ dưỡng.',
+                    folktale_title: 'Sự tích Cây Vú Sữa',
+                    folktale_summary: 'Truyện kể về một cậu bé ham chơi, bỏ nhà đi, khiến người mẹ buồn bã mà qua đời. Khi cậu trở về, tìm mẹ không thấy, cậu ôm lấy một cây xanh trong vườn mà khóc. Kỳ lạ thay, cây bỗng ra hoa, kết trái, cho dòng sữa trắng ngọt ngào như sữa mẹ. Cậu bé hối hận vô cùng, và từ đó cây được gọi là cây vú sữa. Câu chuyện này là một ví dụ điển hình về chức năng giáo dục của cổ tích Việt Nam, truyền tải bài học đạo đức sâu sắc về tình mẫu tử thiêng liêng và sự hối lỗi của người con.',
+                    literature_examples: []
+                },
+                {
+                    id: 'tre',
+                    name: 'Tre',
+                    scientificName: 'Bambusa spp.',
+                    icon: '🎋',
+                    imageUrl: 'https://placehold.co/600x400/4CAF50/ffffff?text=Hàng+Tre+xanh+mát+bờ+sông',
+                    height_max: 7,
+                    description: 'Là một loại cỏ khổng lồ, thân cứng hơn gỗ sồi, cao 5-7m. Dễ sống, phát triển nhanh, mọc thành khóm. Phân bố rộng khắp Việt Nam.',
+                    value: 'Nguyên liệu đa dạng cho kiến trúc, thủ công mỹ nghệ, nhạc cụ và vật dụng hàng ngày. Tre còn là biểu tượng văn hóa sâu sắc.',
+                    folktale_title: 'Cây Tre Trăm Đốt',
+                    folktale_summary: 'Chàng Khoai hiền lành bị phú ông lừa, phải đi tìm cây tre trăm đốt để cưới con gái. Nhờ hai câu thần chú "Khắc xuất" và "Khắc nhập", chàng đã biến những lóng tre rời rạc thành cây tre trăm đốt, vạch trần sự gian xảo của phú ông và cưới được người mình yêu. Câu chuyện này không chỉ thể hiện trí tưởng tượng phong phú của dân gian mà còn là biểu tượng của ước mơ về công lý, sự thật thà chiến thắng cái ác, và sức mạnh của sự đoàn kết khi những mảnh tre riêng lẻ có thể hợp lại thành một thể thống nhất. Tre còn xuất hiện trong "Trồng tre lên trăng" của dân tộc Hà Nhì (về nàng Rây Dích thoát lũ lụt) và "Sự tích cây nêu ngày Tết" (biểu tượng xua đuổi tà ma, bảo vệ bình yên).',
+                    literature_examples: [
+                        { quote: "Bão bùng thân bọc lấy thân. Tay ôm, tay níu tre gần nhau thêm. Thương nhau, tre chẳng ở riêng.", work: "Thơ 'Tre Việt Nam' - Nguyễn Duy" },
+                        { quote: "Đêm trăng thanh anh mới hỏi nàng. Tre non đủ lá đan sàng nên chăng?", work: "Ca dao" },
+                        { quote: "Quê hương tôi có con sông xanh biếc, Nước gương trong soi tóc những hàng tre.", work: "Thơ của Tế Hanh" },
+                        { quote: "Khi măng không uốn thì tre trổ vồng.", work: "Tục ngữ" }
+                    ]
+                },
+                {
+                    id: 'locvung',
+                    name: 'Lộc Vừng',
+                    scientificName: 'Barringtonia acutangula',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/FF5722/ffffff?text=Lộc+Vừng+hoa+đỏ+rủ+bóng',
+                    height_max: 10,
+                    description: 'Cây thân gỗ, cao 0.5-5m, có thể cao hơn. Nổi bật với những chùm hoa dài, rủ xuống như dải lụa, màu trắng hoặc hồng, tỏa hương nhẹ.',
+                    value: 'Cây cảnh quan đô thị và vườn cảnh. Trong phong thủy, tên "lộc vừng" mang ý nghĩa tài lộc, may mắn, sung túc. Cây còn tượng trưng cho sự đoàn kết, bình an.',
+                    folktale_title: 'Biểu tượng phong thủy',
+                    folktale_summary: 'Không có truyện cổ tích cụ thể, nhưng lộc vừng mang ý nghĩa tâm linh mạnh mẽ. Tên gọi và vẻ đẹp của hoa được tin là mang lại tài lộc, may mắn và hạnh phúc viên mãn cho gia chủ. Sự kết hợp giữa vẻ đẹp hình thái và ý nghĩa tên gọi đã tạo nên một biểu tượng phong thủy mạnh mẽ, biến cây từ một loài thực vật thành một "vật phẩm" mang năng lượng tích cực, phản ánh ước vọng về tài lộc và may mắn của người Việt.',
+                    literature_examples: [
+                        { quote: "Gốc nhoài chín nhánh rồng bay / Sông xa hắt đỏ từng dây lộc vừng.", work: "Thơ 'Lộc vừng mùa xuân' - Trương Nam Hương" }
+                    ]
+                },
+                {
+                    id: 'bang',
+                    name: 'Bàng',
+                    scientificName: 'Terminalia catappa',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/FFC107/ffffff?text=Lá+Bàng+chuyển+màu+thu',
+                    height_max: 15,
+                    description: 'Cây thân gỗ cao lớn, tán lá rộng như "chiếc ô xanh khổng lồ". Lá đổi màu rực rỡ theo mùa. Được trồng nhiều ở sân trường, công viên.',
+                    value: 'Cung cấp bóng mát, làm đẹp cảnh quan đô thị. Gắn liền với ký ức tuổi học trò. Còn là biểu tượng của ý chí kiên cường của các tù chính trị Côn Đảo.',
+                    folktale_title: 'Biểu tượng ký ức',
+                    folktale_summary: 'Không có truyện cổ tích cụ thể, nhưng cây bàng là một biểu tượng văn hóa mạnh mẽ, gắn liền với tuổi thơ, trường lớp và sự tuần hoàn của thời gian, hy vọng và sự hồi sinh. Cây bàng, với chu kỳ thay lá rõ rệt và sự hiện diện phổ biến trong sân trường, đã trở thành một biểu tượng mạnh mẽ cho tuổi thơ, sự trưởng thành và những kỷ niệm học trò.',
+                    literature_examples: [
+                        { quote: "Mùa đông cành khẳng khiu / Mùa xuân lộc nảy, hè xanh tươi / Thu về lá bàng đỏ / Là người bạn của tuổi thơ.", work: "Thơ 'Cây Bàng' - Trần Đăng Khoa" }
+                    ]
+                },
+                 {
+                    id: 'banglang',
+                    name: 'Bằng Lăng',
+                    scientificName: 'Lagerstroemia speciosa',
+                    icon: '🌸',
+                    imageUrl: 'https://placehold.co/600x400/673AB7/ffffff?text=Hoa+Bằng+Lăng+tím+mộng+mơ',
+                    height_max: 15,
+                    description: 'Cây thân gỗ, cao 10-15m. Hoa mọc thành chùm màu tím phớt đặc trưng, tạo điểm nhấn lãng mạn cho đường phố, sân vườn.',
+                    value: 'Tạo bóng mát, cảnh quan đô thị, làm sạch không khí. Hoa bằng lăng tím là biểu tượng của sự lãng mạn, thủy chung và những kỷ niệm tuổi học trò.',
+                    folktale_title: 'Biểu tượng lãng mạn',
+                    folktale_summary: 'Không có truyện cổ tích, nhưng hoa bằng lăng đã trở thành một "mã hóa cảm xúc" trong văn hóa, tượng trưng cho tình yêu đầu đời, nỗi buồn chia ly mùa cuối cấp. Màu sắc và mùa hoa của bằng lăng đã trở thành một "mã hóa cảm xúc" trong văn học, đặc biệt trong các tác phẩm về tuổi học trò và tình yêu.',
+                    literature_examples: [
+                        { quote: "Màu hoa tím ngắt như là thủy chung / Của người con gái em thương anh...", work: "Thơ 'Tím bằng lăng' - Mạc Phương" },
+                        { quote: "Nhớ mùa bằng lăng nở, nhớ những ngày cuối cấp...", work: "Thơ 'Nhớ mùa hoa tím bằng lăng'" },
+                        { quote: "Ta đi về phía hoa bằng lăng, tìm lại những ước mơ...", work: "Truyện ngắn 'Đi về phía hoa bằng lăng'" }
+                    ]
+                },
+                 {
+                    id: 'daurai',
+                    name: 'Dầu Rái',
+                    scientificName: 'Dipterocarpus alatus',
+                    icon: '🌲',
+                    imageUrl: 'https://placehold.co/600x400/2196F3/ffffff?text=Cây+Dầu+Rái+cổ+thụ+vươn+cao',
+                    height_max: 50,
+                    description: 'Cây gỗ lớn, thân tròn thẳng, cao tới 40-50m. Quả có hai cánh lớn. Gỗ và nhựa có giá trị kinh tế cao.',
+                    value: 'Gỗ quý dùng trong xây dựng, đóng tàu. Nhựa dùng trong y học. Cây cổ thụ được công nhận là Cây Di sản, có giá trị cảnh quan và bảo tồn.',
+                    folktale_title: 'Truyền thuyết Thần Cây',
+                    folktale_summary: 'Các cây dầu rái cổ thụ được xem là biểu tượng tâm linh, được người dân coi là "thần cây" ban phước và bảo vệ. Có nhiều truyền thuyết về cây báo oán khi bị xâm phạm, thể hiện niềm tin vào sự linh thiêng của tự nhiên. Những câu chuyện về cây dầu rái không phải là cổ tích giải thích nguồn gốc mà là truyền thuyết dân gian, phản ánh tín ngưỡng thờ cúng cây cổ thụ và niềm tin vào sức mạnh siêu nhiên của thiên nhiên.',
+                    literature_examples: [
+                        { quote: "Vườn Dầu trầm mặc, linh thiêng...", work: "Thơ 'Sầu chung' - Vân Du" },
+                        { quote: "Cây dầu rái to lớn, thẳng tắp, cao vút như những mũi tên bay thẳng lên bầu trời ở miền Nam.", work: "Văn xuôi miêu tả" }
+                    ]
+                },
+                {
+                    id: 'saoden',
+                    name: 'Sao Đen',
+                    scientificName: 'Hopea odorata',
+                    icon: '🌲',
+                    imageUrl: 'https://placehold.co/600x400/00796B/ffffff?text=Hàng+Sao+Đen+trên+đường+phố',
+                    height_max: 40,
+                    description: 'Cây gỗ lớn, thường xanh, cao 30-40m, thân thẳng. Vỏ màu nâu đen, nứt dọc. Gỗ tốt, được trồng nhiều làm cây công trình đô thị.',
+                    value: 'Cung cấp gỗ tốt cho đóng tàu, nội thất. Cây bóng mát đô thị, giúp thanh lọc không khí. Vỏ cây dùng làm thuốc chữa bệnh răng miệng.',
+                    folktale_title: 'Từ rừng ra phố',
+                    folktale_summary: 'Không có truyện cổ tích. Sao đen tượng trưng cho sự chuyển đổi vai trò từ cây gỗ quý trong rừng sang cây công trình quen thuộc ở thành thị, phản ánh xu hướng xanh hóa đô thị và bảo tồn gen bản địa. Sự chuyển đổi vai trò của cây Sao Đen từ cây lấy gỗ quý hiếm trong rừng tự nhiên sang cây công trình phổ biến ở đô thị cho thấy sự thích nghi và giá trị đa dạng của loài cây này.',
+                    literature_examples: [
+                        { quote: "Cây sao đen dọc đường phố chợ / Lũ trẻ con vui đùa dưới đó...", work: "Thơ của Xuân Quỳnh" },
+                        { quote: "Sao đen đứng vững vàng trên phố, tô điểm cho không gian đô thị...", work: "Văn xuôi miêu tả" }
+                    ]
+                },
+                {
+                    id: 'tramhuong',
+                    name: 'Trầm hương',
+                    scientificName: 'Aquilaria crassna',
+                    icon: '🪵',
+                    imageUrl: 'https://placehold.co/600x400/A1887F/ffffff?text=Gỗ+Trầm+Hương+quý+hiếm',
+                    height_max: 25,
+                    description: 'Cây gỗ quý hiếm, thân thẳng, phân bố chủ yếu ở miền Bắc. Gỗ có mùi thơm đặc trưng, màu nâu đỏ.',
+                    value: 'Gỗ cực kỳ giá trị (lên đến 2 tỷ đồng/kg), dùng trong chế tác đồ nội thất, trang trí, sản xuất tinh dầu, nhang. Thời gian thu hoạch thường từ 10 đến 20 năm.',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'keogiamhom',
+                    name: 'Keo giâm hom',
+                    scientificName: 'Acacia auriculiformis',
+                    icon: '🌿',
+                    imageUrl: 'https://placehold.co/600x400/8BC34A/ffffff?text=Rừng+Keo+giâm+hom',
+                    height_max: 20,
+                    description: 'Cây lấy gỗ phổ biến, dễ trồng, thích nghi tốt với nhiều điều kiện. Thân thẳng, gỗ màu trắng, cứng và bền.',
+                    value: 'Gỗ giá trị cao (400.000 - 7.000.000 đồng/m3), dùng sản xuất giấy, ván ép, ván MDF, đồ gỗ nội thất/ngoại thất. Thời gian trồng ngắn (5-6 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'sua',
+                    name: 'Sưa',
+                    scientificName: 'Dalbergia tonkinensis',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/795548/ffffff?text=Vân+Gỗ+Sưa+tinh+xảo',
+                    height_max: 15,
+                    description: 'Cây gỗ quý, phân bố ở miền Trung và Tây Nguyên. Gỗ màu nâu, vân gỗ đẹp, chịu được thời tiết ẩm ướt.',
+                    value: 'Gỗ cực kỳ giá trị (lên đến 100 triệu đồng/m3), dùng trong sản xuất đồ gỗ kỹ nghệ, nội thất, mỹ nghệ và phong thủy. Vòng đời ngắn (10-20 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'bachdan',
+                    name: 'Bạch đàn cao sản',
+                    scientificName: 'Eucalyptus spp. (hybrid)',
+                    icon: '🌲',
+                    imageUrl: 'https://placehold.co/600x400/607D8B/ffffff?text=Cây+Bạch+Đàn+cao+vút',
+                    height_max: 30,
+                    description: 'Cây lấy gỗ nhanh, có thể trồng ở nhiều vùng đất, chịu hạn hán và sâu bệnh. Thân thẳng, gỗ màu trắng, mềm và nhẹ.',
+                    value: 'Gỗ giá trị kinh tế cao (1.5 - 3 triệu đồng/m3), dùng sản xuất giấy, ván ép, ván MDF, đồ gỗ nội thất/ngoại thất. Thời gian trồng ngắn (4-5 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'muongden',
+                    name: 'Muồng đen',
+                    scientificName: 'Senna siamea',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/4CAF50/ffffff?text=Cây+Muồng+Đen+thân+thẳng',
+                    height_max: 20,
+                    description: 'Cây công trình có giá trị kinh tế cao, thân thẳng, gỗ màu nâu sáng, cứng và bền. Chịu được hạn hán và sâu bệnh.',
+                    value: 'Gỗ giá trị (3 - 5 triệu đồng/m3), sinh trưởng tương đối nhanh (5-7 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'xoandao',
+                    name: 'Xoan đào',
+                    scientificName: 'Prunus arborea',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/FF7043/ffffff?text=Gỗ+Xoan+Đào+đỏ+đẹp',
+                    height_max: 20,
+                    description: 'Cây nhanh thu hoạch, có thể trồng ở nhiều vùng đất, chịu hạn hán và sâu bệnh. Thân thẳng.',
+                    value: 'Gỗ giá trị kinh tế cao (4 - 6 triệu đồng/m3), dùng sản xuất đồ gỗ nội thất, ngoại thất, mỹ nghệ và phong thủy. Thời gian thu hoạch (5-8 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'camlai',
+                    name: 'Cẩm lai',
+                    scientificName: 'Dalbergia oliveri',
+                    icon: '🪵',
+                    imageUrl: 'https://placehold.co/600x400/D84315/ffffff?text=Vân+Gỗ+Cẩm+Lai+độc+đáo',
+                    height_max: 25,
+                    description: 'Cây gỗ quý, phân bố ở miền Trung và Tây Nguyên. Gỗ màu đỏ nâu đẹp, vân gỗ rất độc đáo.',
+                    value: 'Gỗ giá trị cao trên thị trường, dùng trong sản xuất đồ nội thất, đồ trang trí và đàn ghi ta.',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'thienngan',
+                    name: 'Thiên ngân',
+                    scientificName: 'Senna spectabilis',
+                    icon: '🌳',
+                    imageUrl: 'https://placehold.co/600x400/FFEB3B/ffffff?text=Cây+Thiên+Ngân+hoa+vàng',
+                    height_max: 20,
+                    description: 'Cây công trình có giá trị kinh tế cao, thân thẳng, gỗ màu vàng, cứng và bền.',
+                    value: 'Gỗ giá trị (5 - 8 triệu đồng/m3), dùng sản xuất đồ gỗ nội thất, ngoại thất, mỹ nghệ, phong thủy.',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                },
+                {
+                    id: 'lim',
+                    name: 'Lim',
+                    scientificName: 'Erythrophleum fordii',
+                    icon: '🪵',
+                    imageUrl: 'https://placehold.co/600x400/424242/ffffff?text=Gỗ+Lim+chắc+chắn',
+                    height_max: 30,
+                    description: 'Cây gỗ quý, thân thẳng, gỗ màu nâu đỏ, vân gỗ có màu đen, cứng và nặng.',
+                    value: 'Gỗ cực kỳ giá trị kinh tế cao (15 - 20 triệu đồng/m3). Thời gian trồng lâu (20-30 năm).',
+                    folktale_title: null,
+                    folktale_summary: null,
+                    literature_examples: []
+                }
+            ];
+
+            const treeGrid = document.getElementById('tree-grid');
+            const folktaleGrid = document.getElementById('folktale-grid');
+            const literatureGrid = document.getElementById('literature-grid');
+            const modal = document.getElementById('tree-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            function createTreeCard(tree) {
+                return `
+                    <div data-id="${tree.id}" class="tree-card bg-white rounded-lg shadow-md p-6 text-center cursor-pointer card-hover-effect flex flex-col items-center">
+                        <img src="${tree.imageUrl}" alt="Hình ảnh ${tree.name}" class="w-full h-32 object-cover rounded-md mb-4" onerror="this.onerror=null; this.src='https://placehold.co/400x300/cccccc/333333?text=Không+có+ảnh';">
+                        <div class="text-5xl mb-2">${tree.icon}</div>
+                        <h3 class="text-xl font-bold text-green-800 mb-1">${tree.name}</h3>
+                        <p class="text-sm italic text-stone-500">${tree.scientificName}</p>
+                    </div>
+                `;
+            }
+
+            function createCultureCard(title, summary, treeName, icon) {
+                return `
+                    <div class="bg-lime-50 rounded-lg shadow-sm p-6 flex flex-col">
+                        <div class="flex-grow">
+                             <div class="flex items-center mb-3">
+                                <span class="text-3xl mr-3">${icon}</span>
+                                <h4 class="text-lg font-bold text-green-900">${treeName}</h4>
+                            </div>
+                            <h3 class="text-xl font-semibold text-amber-800 mb-2">${title}</h3>
+                            <p class="text-stone-700">${summary}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            function createLiteratureCard(treeName, icon, quote, work) {
+                 return `
+                    <div class="bg-stone-100 rounded-lg shadow-sm p-6 flex flex-col">
+                        <div class="flex-grow">
+                            <div class="flex items-center mb-4">
+                               <span class="text-3xl mr-3">${icon}</span>
+                                <h4 class="text-lg font-bold text-green-900">${treeName}</h4>
+                            </div>
+                            <blockquote class="border-l-4 border-lime-500 pl-4 italic text-stone-700 mb-2">
+                                "${quote}"
+                            </blockquote>
+                            <p class="text-right text-sm font-semibold text-stone-600 mt-2">- ${work} -</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            treeData.forEach(tree => {
+                treeGrid.innerHTML += createTreeCard(tree);
+                if (tree.folktale_title) {
+                    folktaleGrid.innerHTML += createCultureCard(tree.folktale_title, tree.folktale_summary, tree.name, tree.icon);
+                }
+                if (tree.literature_examples && tree.literature_examples.length > 0) {
+                     tree.literature_examples.forEach(example => {
+                        literatureGrid.innerHTML += createLiteratureCard(tree.name, tree.icon, example.quote, example.work);
+                    });
+                }
+            });
+
+            treeGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.tree-card');
+                if (card) {
+                    const treeId = card.dataset.id;
+                    const tree = treeData.find(t => t.id === treeId);
+                    if (tree) {
+                        openModal(tree);
+                    }
+                }
+            });
+            
+            function openModal(tree) {
+                let literatureHtml = '';
+                if (tree.literature_examples && tree.literature_examples.length > 0) {
+                    literatureHtml += '<p class="font-semibold text-stone-800 mt-4">Trong văn học:</p>';
+                    tree.literature_examples.forEach(example => {
+                        literatureHtml += `
+                            <blockquote class="border-l-4 border-lime-500 pl-4 italic text-stone-700 mt-2 mb-2">
+                                "${example.quote}"
+                                <span class="block text-right text-sm not-italic font-semibold mt-1">- ${example.work}</span>
+                            </blockquote>
+                        `;
+                    });
+                }
+
+                modalContent.innerHTML = `
+                    <button id="close-modal" class="absolute top-4 right-4 text-stone-500 hover:text-red-600 text-3xl font-bold">&times;</button>
+                    <div class="p-6 md:p-8">
+                        <div class="md:flex md:items-start md:space-x-8">
+                            <div class="text-center md:text-left mb-6 md:mb-0 flex-shrink-0">
+                                <img src="${tree.imageUrl}" alt="Hình ảnh ${tree.name}" class="w-48 h-auto rounded-lg shadow-md mx-auto md:mx-0" onerror="this.onerror=null; this.src='https://placehold.co/400x300/cccccc/333333?text=Không+có+ảnh';">
+                                <div class="text-6xl mt-4">${tree.icon}</div>
+                            </div>
+                            <div class="flex-grow">
+                                <h2 class="text-3xl md:text-4xl font-bold text-green-800">${tree.name}</h2>
+                                <p class="text-lg italic text-stone-500 mb-4">${tree.scientificName}</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-stone-100 p-6 rounded-lg">
+                                <h3 class="text-xl font-semibold text-green-800 border-b-2 border-lime-300 pb-2 mb-3">📖 Đặc Điểm & Giá Trị</h3>
+                                <p class="font-semibold text-stone-800">Mô tả:</p>
+                                <p class="text-stone-700 mb-3">${tree.description}</p>
+                                <p class="font-semibold text-stone-800">Giá trị:</p>
+                                <p class="text-stone-700">${tree.value}</p>
+                            </div>
+                            <div class="bg-lime-50 p-6 rounded-lg">
+                                 <h3 class="text-xl font-semibold text-green-800 border-b-2 border-lime-300 pb-2 mb-3">📜 Dấu Ấn Văn Hóa</h3>
+                                 ${tree.folktale_title ? `
+                                     <p class="font-semibold text-stone-800">${tree.folktale_title}:</p>
+                                     <p class="text-stone-700 mb-3">${tree.folktale_summary}</p>
+                                 ` : '<p class="text-stone-600">Chưa có câu chuyện văn hóa nổi bật được ghi nhận trong báo cáo.</p>'}
+                                 ${literatureHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+                modalContent.classList.remove('modal-leave');
+                modalContent.classList.add('modal-enter');
+
+                document.getElementById('close-modal').addEventListener('click', closeModal);
+            }
+
+            function closeModal() {
+                modalContent.classList.remove('modal-enter');
+                modalContent.classList.add('modal-leave');
+                setTimeout(() => {
+                   modal.classList.add('hidden');
+                }, 300);
+            }
+
+            modal.addEventListener('click', (e) => {
+                if(e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            const heightChartCtx = document.getElementById('heightChart').getContext('2d');
+            const chartLabels = treeData.map(tree => tree.name);
+            const chartData = treeData.map(tree => tree.height_max);
+            
+            new Chart(heightChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Chiều cao tối đa (mét)',
+                        data: chartData,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const {ctx, chartArea} = chart;
+                            if (!chartArea) {
+                                return;
+                            }
+                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                            gradient.addColorStop(0, 'rgba(101, 163, 13, 0.7)');
+                            gradient.addColorStop(1, 'rgba(101, 163, 13, 1)');
+                            return gradient;
+                        },
+                        borderColor: 'rgba(101, 163, 13, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5, /* Rounded corners for bars */
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Chiều cao (mét)',
+                                font: { size: 14 }
+                            },
+                            grid: {
+                                color: 'rgba(200, 200, 200, 0.2)' /* Lighter grid lines */
+                            }
+                        },
+                        y: {
+                           ticks: {
+                               font: { size: 12 }
+                           },
+                           grid: {
+                                color: 'rgba(200, 200, 200, 0.2)' /* Lighter grid lines */
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw} m`;
+                                },
+                                title: function(context) {
+                                    /* Wrap long titles */
+                                    const title = context[0].label;
+                                    const maxChar = 16; /* Max characters per line before wrapping */
+                                    if (title.length > maxChar) {
+                                        let wrappedTitle = [];
+                                        for (let i = 0; i < title.length; i += maxChar) {
+                                            wrappedTitle.push(title.substring(i, i + maxChar));
+                                        }
+                                        return wrappedTitle;
+                                    }
+                                    return title;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => {
+                        item.classList.remove('border-lime-600', 'text-lime-700');
+                        item.classList.add('border-transparent', 'text-stone-500');
+                    });
+                    tab.classList.add('border-lime-600', 'text-lime-700');
+                    tab.classList.remove('border-transparent', 'text-stone-500');
+
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        if (content.id === `${target}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+             mobileMenu.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

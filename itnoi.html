@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Soothing Stone and Teal -->
+    <!-- Application Structure Plan: The SPA is designed with a top-down, thematic section-based architecture, guided by a sticky navigation bar. This structure was chosen to transform the dense report into a digestible and explorable journey. The user starts with a high-level overview (distinguishing key concepts), delves into the 'Why' (Causes), understands the 'Impact' (Pros/Cons), discovers the 'How' (Solutions), and finally explores 'Context' (Related Factors). This logical flow enhances usability by allowing non-linear exploration via the nav bar, while interactive elements like clickable cards, accordions, and a conceptual chart within each section encourage deeper engagement with the content, preventing user overload. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 
+        1. Distinguishing Concepts (Table 1) -> Goal: Compare/Clarify -> Viz: Interactive Cards -> Interaction: Click-to-expand -> Justification: More engaging and less overwhelming than a dense static table, allowing users to focus on one concept at a time. -> Method: HTML/CSS/Vanilla JS.
+        2. Root Causes (Section I) -> Goal: Organize/Explore -> Viz: Icon-based categories with accordions -> Interaction: Click-to-reveal -> Justification: Visually breaks down the complex causes into four digestible themes. Accordions hide detailed text, reducing initial cognitive load. -> Method: HTML/CSS/Vanilla JS.
+        3. Pros and Cons (Section II) -> Goal: Compare/Visualize Balance -> Viz: Two-column layout with cards + a conceptual Radar Chart -> Interaction: Hover on cards, view chart -> Justification: Direct side-by-side comparison is effective. The radar chart provides a novel, memorable visual summary of a quiet person's typical strengths and challenges, making the abstract data more concrete. -> Method: HTML/CSS/Vanilla JS + Chart.js.
+        4. Solutions (Section III) -> Goal: Guide/Action -> Viz: Tabbed sections for different solution types -> Interaction: Click on tabs to switch content -> Justification: Organizes a large number of solutions into actionable categories (Skills, Therapy, Lifestyle), empowering the user to find the most relevant strategies for them. -> Method: HTML/CSS/Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <title>Khám Phá Tính Cách Ít Nói: Nguyên Nhân, Tác Động & Giải Pháp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0d9488;
+            border-bottom-color: #0d9488;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .tab-button.active {
+            background-color: #0d9488;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <header class="text-center py-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-teal-700">Khám Phá Tính Cách Ít Nói</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Một hành trình tương tác để hiểu rõ nguyên nhân, tác động và giải pháp cho những người có xu hướng trầm lặng.</p>
+        </header>
+
+        <nav class="sticky top-0 bg-slate-50/80 backdrop-blur-lg z-10 shadow-sm mb-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-center border-b border-slate-200">
+                    <a data-target="overview" class="nav-link active font-semibold text-slate-700 py-4 px-3 sm:px-6 border-b-2 border-transparent">Tổng Quan</a>
+                    <a data-target="causes" class="nav-link font-semibold text-slate-700 py-4 px-3 sm:px-6 border-b-2 border-transparent">Nguyên Nhân</a>
+                    <a data-target="impact" class="nav-link font-semibold text-slate-700 py-4 px-3 sm:px-6 border-b-2 border-transparent">Ưu & Nhược Điểm</a>
+                    <a data-target="solutions" class="nav-link font-semibold text-slate-700 py-4 px-3 sm:px-6 border-b-2 border-transparent">Giải Pháp</a>
+                    <a data-target="related" class="nav-link font-semibold text-slate-700 py-4 px-3 sm:px-6 border-b-2 border-transparent">Yếu Tố Liên Quan</a>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Section: Overview -->
+            <section id="overview" class="content-section active">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-teal-700 mb-2">Phân Biệt Các Khái Niệm</h2>
+                    <p class="max-w-2xl mx-auto text-slate-600">"Ít nói" không đồng nghĩa với nhút nhát hay hướng nội. Nhấp vào từng khái niệm để hiểu rõ sự khác biệt tinh tế nhưng quan trọng giữa chúng.</p>
+                </div>
+                <div id="concepts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                </div>
+            </section>
+
+            <!-- Section: Causes -->
+            <section id="causes" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-teal-700 mb-2">Đâu là Nguyên Nhân Gốc Rễ?</h2>
+                    <p class="max-w-2xl mx-auto text-slate-600">Việc ít nói là kết quả của sự tương tác phức tạp giữa nhiều yếu tố. Khám phá các nhóm nguyên nhân chính để có cái nhìn toàn diện.</p>
+                </div>
+                <div id="causes-accordion" class="max-w-4xl mx-auto space-y-4">
+                </div>
+            </section>
+            
+            <!-- Section: Impact -->
+            <section id="impact" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-teal-700 mb-2">Hai Mặt Của Sự Trầm Lặng</h2>
+                    <p class="max-w-2xl mx-auto text-slate-600">Tính cách ít nói không hoàn toàn là tiêu cực. Nó ẩn chứa những thế mạnh độc đáo bên cạnh những thách thức nhất định trong cuộc sống và công việc.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-600 mb-6 text-center">✅ Ưu Điểm</h3>
+                        <div id="advantages-container" class="space-y-4"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-red-600 mb-6 text-center">❌ Nhược Điểm</h3>
+                        <div id="disadvantages-container" class="space-y-4"></div>
+                    </div>
+                </div>
+                <div class="mt-16 bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-teal-700 mb-4 text-center">Phác Họa Năng Lực Người Ít Nói</h3>
+                    <p class="max-w-3xl mx-auto text-center text-slate-600 mb-6">Biểu đồ radar dưới đây minh họa một cách khái niệm các điểm mạnh và lĩnh vực cần cải thiện thường thấy ở người ít nói. Đây không phải là dữ liệu thống kê, mà là một công cụ trực quan để suy ngẫm.</p>
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Solutions -->
+            <section id="solutions" class="content-section">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-teal-700 mb-2">Hành Trình Vượt Qua & Phát Triển</h2>
+                    <p class="max-w-2xl mx-auto text-slate-600">Cải thiện không có nghĩa là thay đổi bản chất, mà là trang bị thêm công cụ để tự tin và kết nối tốt hơn. Khám phá các giải pháp từ tự rèn luyện đến can thiệp chuyên sâu.</p>
+                </div>
+                <div class="max-w-5xl mx-auto">
+                    <div id="solutions-tabs-buttons" class="flex flex-wrap justify-center gap-2 mb-8">
+                    </div>
+                    <div id="solutions-tabs-content">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Related Factors -->
+            <section id="related" class="content-section">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-teal-700 mb-2">Các Yếu Tố Liên Quan</h2>
+                    <p class="max-w-2xl mx-auto text-slate-600">Giao tiếp không tồn tại một cách độc lập. Nó chịu ảnh hưởng sâu sắc từ gia đình, lòng tự trọng và cả bối cảnh công nghệ hiện đại.</p>
+                </div>
+                <div id="related-factors-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center py-12 mt-8 border-t border-slate-200">
+            <p class="text-slate-500">Báo cáo tương tác được tạo bởi AI. Nội dung dựa trên nghiên cứu tâm lý học hành vi.</p>
+        </footer>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const data = {
+        concepts: [
+            { id: 'itnoi', title: 'Ít nói', content: 'Là một đặc điểm hành vi, chỉ xu hướng giữ im lặng, ít tham gia trò chuyện. Có thể là một lựa chọn có chủ đích hoặc do khó khăn tâm lý. Không phải là bệnh lý.', link: 'Là biểu hiện trực tiếp.', color: 'teal' },
+            { id: 'huongnoi', title: 'Hướng nội', content: 'Là một đặc điểm tính cách bẩm sinh. Người hướng nội lấy năng lượng từ sự yên tĩnh, tiêu tốn năng lượng trong môi trường xã hội. Không phải là bệnh lý.', link: 'Người hướng nội thường ít nói do bản chất tính cách.', color: 'indigo' },
+            { id: 'nhutnhat', title: 'Nhút nhát', content: 'Là cảm giác không thoải mái, sợ hãi khi gặp người mới. Thường là ngắn hạn và sẽ giảm khi quen thuộc. Không phải là bệnh lý.', link: 'Người nhút nhát thường ít nói trong các tình huống xã hội mới.', color: 'amber' },
+            { id: 'sad', title: 'Rối loạn lo âu xã hội (SAD)', content: 'Là một rối loạn tâm thần cần điều trị. Đặc trưng bởi nỗi sợ hãi tột độ, dai dẳng khi bị người khác đánh giá, gây suy nhược đáng kể đến cuộc sống.', link: 'Ít nói là một triệu chứng chính của SAD, do nỗi sợ hãi chi phối.', color: 'red' },
+        ],
+        causes: [
+            { 
+                category: 'Tính cách & Bẩm sinh', 
+                icon: '👤',
+                items: [
+                    { title: 'Tính cách hướng nội', content: 'Xu hướng tự nhiên tập trung vào nội tâm, lấy năng lượng từ sự yên tĩnh và tiêu tốn năng lượng trong các tương tác xã hội đông người. Họ ít nói để bảo toàn năng lượng. <br><b>Ví dụ:</b> Một lập trình viên thích làm việc một mình và cảm thấy kiệt sức sau một cuộc họp lớn.' },
+                    { title: 'Yếu tố di truyền', content: 'Sự nhút nhát và xu hướng ít nói có thể được thừa hưởng từ gia đình. Môi trường gia đình trầm tính cũng góp phần định hình thói quen này. <br><b>Ví dụ:</b> Con cái của cặp cha mẹ trầm tính cũng thường có xu hướng rụt rè hơn bạn bè.' }
+                ]
+            },
+            { 
+                category: 'Tâm lý & Cảm xúc',
+                icon: '🧠',
+                items: [
+                    { title: 'Thiếu tự tin', content: 'Lo lắng về việc bị đánh giá, sợ mắc lỗi hoặc nói điều không phù hợp. Đây là một trong những rào cản giao tiếp lớn nhất. <br><b>Ví dụ:</b> Một sinh viên không dám phát biểu ý tưởng hay vì sợ bị bạn bè cười chê.' },
+                    { title: 'Sợ bị đánh giá / Sợ nói trước đám đông', content: 'Nỗi sợ hãi khi phải thể hiện bản thân trước nhiều người, gây ra các triệu chứng hoảng loạn và hành vi né tránh. <br><b>Ví dụ:</b> Một nhân viên từ chối cơ hội thăng tiến vì nó yêu cầu phải thuyết trình thường xuyên.' },
+                    { title: 'Trầm cảm', content: 'Ít nói và thu mình là dấu hiệu phổ biến của trầm cảm, đi kèm với trạng thái buồn bã kéo dài, mất hứng thú và thiếu năng lượng. <br><b>Ví dụ:</b> Một học sinh từng hoạt bát bỗng trở nên lầm lì, học tập sa sút.' },
+                    { title: 'Rối loạn lo âu xã hội (SAD)', content: 'Nỗi sợ hãi tột độ và phi lý trong các tình huống xã hội. Đây là một bệnh lý cần can thiệp chuyên nghiệp, không chỉ là sự nhút nhát thông thường. <br><b>Ví dụ:</b> Một người luôn né tránh các buổi tiệc tùng vì cảm thấy buồn nôn, tim đập nhanh khi nghĩ đến việc phải nói chuyện.' },
+                    { title: 'Sang chấn tâm lý (Trauma)', content: 'Những trải nghiệm đau thương trong quá khứ (như bị bạo lực, sỉ nhục) có thể khiến một người thu mình lại như một cơ chế phòng vệ. <br><b>Ví dụ:</b> Nạn nhân của bạo lực học đường khi lớn lên có thể trở nên rất khép kín và khó tin tưởng người khác.' }
+                ]
+            },
+            { 
+                category: 'Môi trường & Xã hội', 
+                icon: '🌍',
+                items: [
+                    { title: 'Mô hình giao tiếp gia đình', content: 'Phong cách nuôi dạy độc đoán, thờ ơ hoặc bao bọc quá mức đều hạn chế khả năng phát triển kỹ năng giao tiếp của trẻ. <br><b>Ví dụ:</b> Trẻ lớn lên trong gia đình nghiêm khắc, hay bị la mắng khi bày tỏ ý kiến sẽ dần trở nên sợ nói.' },
+                    { title: 'Thiếu cơ hội tương tác', content: 'Thiếu môi trường để thực hành giao tiếp, đặc biệt là khi chuyển đến một nơi ở mới hoặc làm công việc ít tiếp xúc, có thể làm kỹ năng giao tiếp bị mai một. <br><b>Ví dụ:</b> Người mới chuyển đến thành phố, ít tham gia hoạt động xã hội, dần cảm thấy khó bắt chuyện.' },
+                    { title: 'Ảnh hưởng của công nghệ', content: 'Lạm dụng thiết bị điện tử có thể làm giảm các tương tác mặt đối mặt, khiến một người trở nên thoải mái hơn với giao tiếp ảo và ngại giao tiếp trong đời thực. <br><b>Ví dụ:</b> Một thanh thiếu niên dành nhiều thời gian chơi game online cảm thấy lúng túng khi gặp gỡ bạn bè trực tiếp.' }
+                ]
+            },
+            { 
+                category: 'Bệnh lý', 
+                icon: '⚕️',
+                items: [
+                    { title: 'Hạn chế về ngôn ngữ / Chậm nói', content: 'Khó khăn trong phát âm hoặc vốn từ hạn hẹp gây ra cảm giác mặc cảm, tự ti, dẫn đến ngại nói. <br><b>Ví dụ:</b> Một đứa trẻ bị nói lắp thường bị bạn bè trêu chọc nên dần trở nên ngại nói.' },
+                    { title: 'Rối loạn phổ tự kỷ (ASD)', content: 'Là một tình trạng phát triển thần kinh, đặc trưng bởi những hạn chế trong giao tiếp và tương tác xã hội. Ít nói là một triệu chứng cốt lõi. <br><b>Ví dụ:</b> Một đứa trẻ 5 tuổi chưa nói được nhiều, ít giao tiếp bằng mắt, thích chơi một mình.' },
+                    { title: 'Câm nín chọn lọc (Selective Mutism)', content: 'Là một dạng rối loạn lo âu, trẻ có khả năng nói ở nhà nhưng hoàn toàn im lặng ở một số môi trường xã hội khác như trường học. <br><b>Ví dụ:</b> Một bé gái hoạt bát ở nhà nhưng không nói một lời nào ở trường.' }
+                ]
+            }
+        ],
+        impact: {
+            advantages: [
+                { title: 'Khả năng lắng nghe vượt trội', content: 'Họ kiên nhẫn tiếp nhận ý kiến, không ngắt lời, giúp xây dựng những kết nối chân thành và sâu sắc.' },
+                { title: 'Tư duy sâu sắc và cẩn trọng', content: 'Họ dành nhiều thời gian để suy ngẫm, phân tích kỹ lưỡng trước khi đưa ra quyết định hay lời khuyên.' },
+                { title: 'Kiểm soát cảm xúc tốt', content: 'Họ thường giữ được sự bình tĩnh, chín chắn ngay cả khi đối mặt với áp lực hay xung đột.' },
+                { title: 'Đáng tin cậy', content: 'Họ thường là người biết giữ bí mật, không ba hoa, tạo dựng được sự tin tưởng từ người khác.' },
+                { title: 'Hành động nhiều hơn lời nói', content: 'Họ chứng minh năng lực của mình qua kết quả công việc xuất sắc thay vì quảng bá bản thân.' },
+                { title: 'Có chính kiến vững vàng', content: 'Sự tự tin của họ đến từ bên trong, không dễ bị chi phối bởi dư luận.' }
+            ],
+            disadvantages: [
+                { title: 'Khó khăn trong việc kết bạn', content: 'Ít cơ hội chia sẻ suy nghĩ, cảm xúc có thể dẫn đến cảm giác cô đơn, khó xây dựng mối quan hệ mới.' },
+                { title: 'Bỏ lỡ cơ hội trong sự nghiệp', content: 'Ngại thể hiện bản thân, trình bày ý tưởng có thể khiến họ bị bỏ qua trong các dự án hoặc cơ hội thăng tiến.' },
+                { title: 'Dễ bị hiểu lầm', content: 'Sự im lặng có thể bị hiểu là kiêu căng, khó gần hoặc không thân thiện, gây ra những đánh giá sai lệch.' },
+                { title: 'Cảm thấy tự ti và căng thẳng', content: 'Lo lắng về việc bị đánh giá khi giao tiếp tạo ra một vòng luẩn quẩn tiêu cực, làm gia tăng sự căng thẳng.' },
+                { title: 'Dễ trở thành mục tiêu bắt nạt', content: 'Ở trẻ em, sự im lặng và thiếu khả năng phản kháng có thể khiến chúng trở thành đối tượng của bạo lực học đường.' },
+                { title: 'Khó thể hiện cảm xúc', content: 'Việc giữ cảm xúc bên trong có thể gây ra căng thẳng và khiến người khác khó thấu hiểu, giúp đỡ.' }
+            ]
+        },
+        solutions: [
+            {
+                tab: 'Kỹ Năng Giao Tiếp',
+                icon: '💬',
+                solutions: [
+                    { title: 'Nhận diện nỗi sợ & thay đổi tư duy', content: 'Hiểu rõ điều gì đang cản trở bạn (sợ bị từ chối, sợ nói sai) và thay đổi suy nghĩ tiêu cực bằng những lời khẳng định tích cực.' },
+                    { title: 'Luyện tập nói chuyện phiếm', content: 'Chuẩn bị sẵn các chủ đề đơn giản, an toàn (thời tiết, sở thích, công việc) để dễ dàng bắt đầu và duy trì cuộc trò chuyện.' },
+                    { title: 'Lắng nghe chủ động', content: 'Phát huy thế mạnh lắng nghe của bạn. Tập trung vào người nói, đặt câu hỏi mở để thể hiện sự quan tâm thực sự.' },
+                    { title: 'Sử dụng ngôn ngữ cơ thể', content: 'Một nụ cười, một cái gật đầu hay giao tiếp bằng mắt có thể truyền tải sự thân thiện và cởi mở còn hiệu quả hơn lời nói.' },
+                    { title: 'Mở rộng kiến thức và vốn từ', content: 'Đọc sách, xem tin tức, học hỏi về nhiều lĩnh vực giúp bạn có nhiều chủ đề hơn để chia sẻ và tự tin hơn khi nói.' }
+                ]
+            },
+            {
+                tab: 'Can Thiệp Tâm Lý',
+                icon: '🧘',
+                solutions: [
+                    { title: 'Liệu pháp Nhận thức Hành vi (CBT)', content: 'Một phương pháp trị liệu hiệu quả giúp nhận diện, thách thức và thay đổi các mẫu suy nghĩ và hành vi tiêu cực liên quan đến giao tiếp.' },
+                    { title: 'Liệu pháp Tiếp xúc', content: 'Dần dần đối mặt với các tình huống xã hội gây lo lắng, bắt đầu từ mức độ dễ đến khó, để giảm bớt nỗi sợ một cách có hệ thống.' },
+                    { title: 'Trị liệu nhóm', content: 'Thực hành kỹ năng xã hội trong một môi trường an toàn, được hỗ trợ cùng với những người có chung vấn đề.' },
+                    { title: 'Điều trị bằng thuốc', content: 'Trong các trường hợp rối loạn lo âu hoặc trầm cảm nặng, bác sĩ có thể kê đơn thuốc để giúp kiểm soát triệu chứng, kết hợp với trị liệu tâm lý.' }
+                ]
+            },
+            {
+                tab: 'Lối Sống & Môi Trường',
+                icon: '🌿',
+                solutions: [
+                    { title: 'Thực hành chánh niệm & thư giãn', content: 'Các kỹ thuật như thiền, hít thở sâu, yoga giúp giảm căng thẳng và quản lý cảm xúc tốt hơn trong các tình huống xã hội.' },
+                    { title: 'Chăm sóc sức khỏe thể chất', content: 'Ăn uống lành mạnh, tập thể dục đều đặn và ngủ đủ giấc có tác động tích cực đáng kể đến tâm trạng và mức độ lo âu.' },
+                    { title: 'Tìm kiếm hỗ trợ xã hội', content: 'Đừng cô lập bản thân. Chủ động kết nối với gia đình, bạn bè tin cậy hoặc tham gia các câu lạc bộ, nhóm có sở thích chung.' },
+                    { title: 'Sử dụng công nghệ một cách cân bằng', content: 'Tận dụng công nghệ để kết nối nhưng không để nó thay thế hoàn toàn các tương tác trực tiếp. Đặt ra giới hạn thời gian sử dụng thiết bị điện tử.' }
+                ]
+            }
+        ],
+        relatedFactors: [
+            { icon: '👨‍👩‍👧‍👦', title: 'Vai trò của gia đình', content: 'Môi trường gia đình là nơi đầu tiên hình thành phong cách giao tiếp. Cha mẹ cần tạo ra một không gian an toàn, khuyến khích con bày tỏ ý kiến và làm gương về việc lắng nghe, thấu hiểu.' },
+            { icon: '💖', title: 'Lòng tự trọng & Đồng cảm', content: 'Lòng tự trọng cao giúp bạn tự tin thể hiện bản thân. Sự đồng cảm - khả năng thấu hiểu cảm xúc của người khác - là chìa khóa để xây dựng những kết nối sâu sắc, ngay cả khi bạn không nói nhiều.' },
+            { icon: '📱', title: 'Ảnh hưởng của công nghệ', content: 'Công nghệ là con dao hai lưỡi. Nó có thể là kênh giao tiếp an toàn cho người ít nói, nhưng việc lạm dụng có thể làm giảm kỹ năng tương tác trong đời thực. Cần có sự cân bằng.' }
+        ]
+    };
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.content-section');
+    const conceptsContainer = document.getElementById('concepts-container');
+    const causesAccordion = document.getElementById('causes-accordion');
+    const advantagesContainer = document.getElementById('advantages-container');
+    const disadvantagesContainer = document.getElementById('disadvantages-container');
+    const solutionsTabsButtons = document.getElementById('solutions-tabs-buttons');
+    const solutionsTabsContent = document.getElementById('solutions-tabs-content');
+    const relatedFactorsContainer = document.getElementById('related-factors-container');
+    
+    // Navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const targetId = link.getAttribute('data-target');
+            
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            link.classList.add('active');
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Render Overview Section
+    data.concepts.forEach(concept => {
+        const card = document.createElement('div');
+        card.className = 'p-6 bg-white rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1';
+        card.innerHTML = `
+            <h3 class="font-bold text-xl mb-2 text-${concept.color}-600">${concept.title}</h3>
+            <div class="concept-content hidden">
+                <p class="text-slate-600 mb-3">${concept.content}</p>
+                <p class="text-sm text-${concept.color}-500 italic">${concept.link}</p>
+            </div>
+        `;
+        conceptsContainer.appendChild(card);
+
+        card.addEventListener('click', () => {
+            card.querySelector('.concept-content').classList.toggle('hidden');
+        });
+    });
+
+    // Render Causes Section
+    data.causes.forEach(cause => {
+        const accordionItem = document.createElement('div');
+        accordionItem.className = 'border border-slate-200 rounded-lg bg-white';
+        let itemsHtml = cause.items.map(item => `
+            <div class="py-3">
+                <h4 class="font-semibold text-teal-700">${item.title}</h4>
+                <p class="text-slate-600 text-sm mt-1">${item.content}</p>
+            </div>
+        `).join('');
+
+        accordionItem.innerHTML = `
+            <button class="accordion-button w-full text-left p-4 flex justify-between items-center">
+                <span class="text-lg font-semibold text-slate-800 flex items-center"><span class="text-2xl mr-3">${cause.icon}</span> ${cause.category}</span>
+                <span class="transform transition-transform duration-300">▼</span>
+            </button>
+            <div class="accordion-content px-4">
+                <div class="py-2 border-t border-slate-200">${itemsHtml}</div>
+            </div>
+        `;
+        causesAccordion.appendChild(accordionItem);
+    });
+
+    causesAccordion.addEventListener('click', e => {
+        const button = e.target.closest('.accordion-button');
+        if (button) {
+            const content = button.nextElementSibling;
+            const arrow = button.querySelector('span:last-child');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                document.querySelectorAll('.accordion-content').forEach(item => {
+                    item.style.maxHeight = null;
+                    item.previousElementSibling.querySelector('span:last-child').style.transform = 'rotate(0deg)';
+                });
+                content.style.maxHeight = content.scrollHeight + "px";
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+    });
+
+
+    // Render Impact Section
+    data.impact.advantages.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card p-4';
+        card.innerHTML = `
+            <h4 class="font-semibold text-lg text-slate-800">${item.title}</h4>
+            <p class="text-slate-600 mt-1">${item.content}</p>
+        `;
+        advantagesContainer.appendChild(card);
+    });
+    data.impact.disadvantages.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card p-4';
+        card.innerHTML = `
+            <h4 class="font-semibold text-lg text-slate-800">${item.title}</h4>
+            <p class="text-slate-600 mt-1">${item.content}</p>
+        `;
+        disadvantagesContainer.appendChild(card);
+    });
+    
+    // Render Impact Chart
+    const ctx = document.getElementById('impactChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Lắng nghe', 'Tư duy sâu', 'Hành động', 'Đáng tin cậy', 'Kết bạn mới', 'Nắm bắt cơ hội', 'Hòa nhập nhóm'],
+            datasets: [{
+                label: 'Hồ sơ năng lực khái niệm',
+                data: [9, 8, 8, 9, 4, 5, 5],
+                fill: true,
+                backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                borderColor: 'rgb(13, 148, 136)',
+                pointBackgroundColor: 'rgb(13, 148, 136)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(13, 148, 136)'
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                    pointLabels: { font: { size: 13 }, color: '#334155' },
+                    ticks: {
+                        backdropColor: 'rgba(255, 255, 255, 0.75)',
+                        stepSize: 2,
+                        color: '#64748b'
+                    },
+                    min: 0,
+                    max: 10
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#334155',
+                        font: { size: 14 }
+                    }
+                }
+            }
+        }
+    });
+
+    // Render Solutions Section
+    data.solutions.forEach((tabData, index) => {
+        const button = document.createElement('button');
+        button.className = 'tab-button px-4 py-2 rounded-full font-semibold transition-colors duration-300';
+        button.dataset.target = `tab-${index}`;
+        button.innerHTML = `<span class="mr-2">${tabData.icon}</span>${tabData.tab}`;
+        solutionsTabsButtons.appendChild(button);
+
+        const content = document.createElement('div');
+        content.id = `tab-${index}`;
+        content.className = 'tab-content hidden';
+        let solutionsHtml = tabData.solutions.map(sol => `
+            <div class="card p-5">
+                <h4 class="font-semibold text-lg text-slate-800">${sol.title}</h4>
+                <p class="text-slate-600 mt-1">${sol.content}</p>
+            </div>
+        `).join('');
+        content.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">${solutionsHtml}</div>`;
+        solutionsTabsContent.appendChild(content);
+
+        if (index === 0) {
+            button.classList.add('active');
+            content.classList.remove('hidden');
+        }
+    });
+    
+    solutionsTabsButtons.addEventListener('click', e => {
+        const button = e.target.closest('.tab-button');
+        if (button) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById(button.dataset.target).classList.remove('hidden');
+        }
+    });
+
+    // Render Related Factors Section
+    data.relatedFactors.forEach(factor => {
+        const card = document.createElement('div');
+        card.className = 'card p-6 text-center';
+        card.innerHTML = `
+            <div class="text-5xl mb-4">${factor.icon}</div>
+            <h3 class="font-bold text-xl mb-2 text-teal-700">${factor.title}</h3>
+            <p class="text-slate-600">${factor.content}</p>
+        `;
+        relatedFactorsContainer.appendChild(card);
+    });
+
+});
+</script>
+
+</body>
+</html>
