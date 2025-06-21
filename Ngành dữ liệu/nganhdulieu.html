@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: Lộ Trình Sự Nghiệp Ngành Dữ Liệu tại Việt Nam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-line::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            height: 2rem;
+            border-left: 2px dashed #6200F0;
+            transform: translateX(-50%);
+        }
+         .flow-line-last::after {
+            display: none;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-[#1a1a2e]">
+
+    <!-- 
+    Color Palette Name: Energetic & Playful (Adapted)
+    - Primary Roles:
+      - Data Analyst: #00F0B5 (Green)
+      - Data Engineer: #00E0F0 (Cyan)
+      - Data Scientist: #6200F0 (Purple)
+    - Accents: #F000B5 (Magenta), #F07000 (Orange)
+    - Background: #1a1a2e (Dark Blue/Purple)
+    - Text: #FFFFFF, #e0e0e0
+    -->
+
+    <!-- 
+    Narrative Plan:
+    1. Hero Section: Hook with the importance of data careers.
+    2. The Three Pillars: Introduce the 3 main roles (Analyst, Engineer, Scientist).
+    3. Role Comparison: A radar chart to visualize the different focus areas of each role.
+    4. Salary Landscape: A grouped bar chart to compare salaries in Vietnam by role and experience.
+    5. Essential Toolkit: A horizontal stacked bar chart to show the composition of skills for each role.
+    6. Career Journey: A visual flowchart using HTML/CSS to map the progression path for each role.
+    7. Conclusion & Resources: Final advice and call to action.
+    -->
+    
+    <!--
+    Visualization Plan:
+    1. Data Point: Role Focus Comparison (Business, Programming, Systems, ML/Stats)
+       - Goal: Compare
+       - Chosen Viz: Radar Chart (Chart.js)
+       - Justification: Best for comparing multiple variables across categories. Clearly shows the unique shape of each role's focus. CONFIRMED NO SVG.
+    2. Data Point: Salary by Role & Experience
+       - Goal: Compare
+       - Chosen Viz: Grouped Bar Chart (Chart.js)
+       - Justification: Standard and most effective for comparing numerical values across multiple categories. CONFIRMED NO SVG.
+    3. Data Point: Skill Composition per Role
+       - Goal: Compare Composition
+       - Chosen Viz: Horizontal Stacked Bar Chart (Chart.js)
+       - Justification: Excellent for showing the proportional breakdown of a whole (total skillset) and comparing these compositions across roles. CONFIRMED NO SVG.
+    4. Data Point: Career Progression Path
+       - Goal: Organize / Show a Process
+       - Chosen Viz: Flow Chart (Structured HTML/CSS with Tailwind)
+       - Justification: The clearest way to represent a linear, multi-stage process for each role without using SVG or Mermaid JS. CONFIRMED NO SVG/MERMAID JS.
+    -->
+
+    <header class="bg-[#161625]/80 backdrop-blur-sm sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <div class="text-white font-bold text-xl">
+                    <span class="text-[#00F0B5]">Data</span><span class="text-white">Career</span><span class="text-[#00E0F0]">VN</span>
+                </div>
+                <div class="hidden md:flex space-x-6 text-white">
+                    <a href="#roles" class="hover:text-[#00F0B5] transition-colors">Các Vai Trò</a>
+                    <a href="#salary" class="hover:text-[#00F0B5] transition-colors">Lương Bổng</a>
+                    <a href="#skills" class="hover:text-[#00F0B5] transition-colors">Kỹ Năng</a>
+                    <a href="#journey" class="hover:text-[#00F0B5] transition-colors">Lộ Trình</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 text-white">
+
+        <section id="hero" class="text-center mb-24">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
+                Chinh Phục <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00F0B5] via-[#00E0F0] to-[#6200F0]">Thế Giới Dữ Liệu</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+                Một lộ trình toàn diện về các vai trò, kỹ năng, và mức lương trong ngành dữ liệu đang phát triển bùng nổ tại Việt Nam. Khám phá con đường sự nghiệp dành cho bạn.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="kpi-card p-4 rounded-lg text-center">
+                    <p class="text-4xl font-bold text-[#00F0B5]">28%</p>
+                    <p class="text-gray-300">Tăng trưởng nhu cầu cho Data Scientist (dự báo)</p>
+                </div>
+                <div class="kpi-card p-4 rounded-lg text-center">
+                    <p class="text-4xl font-bold text-[#00E0F0]">Top 1</p>
+                    <p class="text-gray-300">Data Engineer là xu hướng phát triển hàng đầu</p>
+                </div>
+                <div class="kpi-card p-4 rounded-lg text-center">
+                    <p class="text-4xl font-bold text-[#6200F0]">90%</p>
+                    <p class="text-gray-300">Dữ liệu thế giới được tạo ra trong 2 năm qua</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="roles" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4">Ba Trụ Cột Của Ngành Dữ Liệu</h2>
+            <p class="text-center text-gray-300 max-w-2xl mx-auto mb-12">Mỗi vai trò đóng một mắt xích quan trọng trong chuỗi giá trị dữ liệu, từ xây dựng nền tảng, phân tích kinh doanh, đến dự báo tương lai.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <div class="bg-[#161625] p-6 rounded-lg shadow-xl md:col-span-2 lg:col-span-1">
+                    <h3 class="text-2xl font-bold mb-4 text-[#F000B5]">So Sánh Trọng Tâm Kỹ Năng</h3>
+                    <p class="text-gray-400 mb-4">Biểu đồ radar này trực quan hóa sự khác biệt về trọng tâm kỹ năng giữa ba vai trò. Data Engineer tập trung vào hệ thống, Data Analyst mạnh về kinh doanh và trực quan hóa, trong khi Data Scientist là chuyên gia về thống kê và học máy.</p>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="roleComparisonChart"></canvas>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-6 content-start">
+                    <div class="bg-[#161625] p-6 rounded-lg shadow-xl border-l-4 border-[#00F0B5]">
+                        <h4 class="text-xl font-bold text-[#00F0B5]">Data Analyst</h4>
+                        <p class="text-gray-300">"Người kể chuyện", biến dữ liệu thành báo cáo và insights kinh doanh, trả lời câu hỏi "Chuyện gì đã xảy ra?".</p>
+                    </div>
+                    <div class="bg-[#161625] p-6 rounded-lg shadow-xl border-l-4 border-[#00E0F0]">
+                        <h4 class="text-xl font-bold text-[#00E0F0]">Data Engineer</h4>
+                        <p class="text-gray-300">"Kiến trúc sư", xây dựng và duy trì hệ thống, đường ống dữ liệu (data pipeline) để đảm bảo dữ liệu sạch và sẵn sàng.</p>
+                    </div>
+                    <div class="bg-[#161625] p-6 rounded-lg shadow-xl border-l-4 border-[#6200F0]">
+                        <h4 class="text-xl font-bold text-[#6200F0]">Data Scientist</h4>
+                        <p class="text-gray-300">"Nhà tiên tri", sử dụng mô hình dự đoán và học máy để trả lời câu hỏi "Chuyện gì sẽ xảy ra?".</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="salary" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4">Bức Tranh Lương Bổng tại Việt Nam</h2>
+            <p class="text-center text-gray-300 max-w-2xl mx-auto mb-12">Mức lương ngành dữ liệu tại Việt Nam rất cạnh tranh và tăng trưởng nhanh chóng theo kinh nghiệm. Data Engineer và Data Scientist thường có mức khởi điểm và tiềm năng thu nhập cao hơn do yêu cầu kỹ thuật chuyên sâu.</p>
+            <div class="bg-[#161625] p-6 rounded-lg shadow-xl">
+                 <div class="chart-container h-96 max-h-[500px]">
+                    <canvas id="salaryChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="skills" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4">Bộ Công Cụ Thiết Yếu</h2>
+            <p class="text-center text-gray-300 max-w-2xl mx-auto mb-12">Mỗi vai trò đòi hỏi một bộ kỹ năng riêng. Biểu đồ dưới đây cho thấy tỷ trọng các nhóm kỹ năng chính cho từng vị trí, giúp bạn định hình lộ trình học tập hiệu quả.</p>
+            <div class="bg-[#161625] p-6 rounded-lg shadow-xl">
+                <div class="chart-container h-96 max-h-[500px]">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="journey" class="mb-24">
+            <h2 class="text-3xl font-bold text-center mb-4">Hành Trình Sự Nghiệp</h2>
+            <p class="text-center text-gray-300 max-w-2xl mx-auto mb-12">Sự nghiệp trong ngành dữ liệu là một hành trình phát triển liên tục. Dưới đây là lộ trình tiêu biểu từ cấp độ khởi đầu đến chuyên gia cho từng vai trò.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="flex flex-col items-center space-y-8">
+                    <h3 class="text-2xl font-bold text-[#00F0B5]">Data Analyst</h3>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Entry-level (0-1 năm)</h4>
+                        <p class="text-sm text-gray-400">Thu thập, làm sạch dữ liệu, tạo báo cáo cơ bản với Excel, Power BI.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Junior (1-3 năm)</h4>
+                        <p class="text-sm text-gray-400">Phân tích sâu hơn, tìm xu hướng, trực quan hóa, sử dụng SQL.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Senior (3+ năm)</h4>
+                        <p class="text-sm text-gray-400">Phân tích phức tạp, dự báo, đề xuất chiến lược, hướng dẫn nhóm.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line-last">
+                        <h4 class="font-bold">Manager / Specialist</h4>
+                        <p class="text-sm text-gray-400">Quản lý đội ngũ, chuyên môn hóa (tài chính, marketing) hoặc chuyển sang Data Scientist.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center space-y-8">
+                    <h3 class="text-2xl font-bold text-[#00E0F0]">Data Engineer</h3>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Fresher (0-1 năm)</h4>
+                        <p class="text-sm text-gray-400">Hỗ trợ xây dựng luồng dữ liệu, tối ưu truy vấn SQL cơ bản.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Junior (1-3 năm)</h4>
+                        <p class="text-sm text-gray-400">Xây dựng pipeline/ETL đơn giản, viết script xử lý dữ liệu.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Senior (4-7 năm)</h4>
+                        <p class="text-sm text-gray-400">Thiết kế hệ thống dữ liệu lớn, tối ưu hiệu suất, quản lý Cloud/Big Data.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line-last">
+                        <h4 class="font-bold">Architect / Manager</h4>
+                        <p class="text-sm text-gray-400">Thiết kế kiến trúc tổng thể, dẫn dắt chiến lược, quản lý team.</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col items-center space-y-8">
+                    <h3 class="text-2xl font-bold text-[#6200F0]">Data Scientist</h3>
+                     <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Junior (1-3 năm)</h4>
+                        <p class="text-sm text-gray-400">Huấn luyện mô hình ML đầu tiên, chọn metric, triển khai thử nghiệm.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Mid-level (3-5 năm)</h4>
+                        <p class="text-sm text-gray-400">Phụ trách dự án end-to-end, A/B test, tinh chỉnh mô hình, publish API.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line">
+                        <h4 class="font-bold">Senior (5-8 năm)</h4>
+                        <p class="text-sm text-gray-400">Dẫn dắt roadmap, thiết kế feature store, chiến lược MLOps.</p>
+                    </div>
+                    <div class="relative w-full text-center p-4 bg-[#161625] rounded-lg shadow-md flow-line-last">
+                        <h4 class="font-bold">Lead / Head of Data</h4>
+                        <p class="text-sm text-gray-400">Quản lý ngân sách, nhân sự, đo lường ROI, đại diện công ty.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#161625] py-8">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <p>Bắt đầu hành trình của bạn ngay hôm nay. Không ngừng học hỏi, xây dựng dự án và kết nối với cộng đồng.</p>
+            <p class="text-sm mt-2">Infographic được tạo bởi Canvas Infographics. Dữ liệu tổng hợp từ các nguồn uy tín về thị trường Việt Nam.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            } else {
+                return label;
+            }
+        };
+
+        const formatVnd = (value) => {
+             if (typeof value !== 'number') return value;
+             return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        };
+        
+        function wrapLabel(label, maxLength) {
+            if (label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            let currentLine = '';
+            const lines = [];
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        }
+
+        const defaultChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e0e0e0',
+                        font: {
+                            family: "'Be Vietnam Pro', sans-serif"
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#a0a0a0' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    ticks: { color: '#a0a0a0' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                }
+            }
+        };
+
+        const roleComparisonCtx = document.getElementById('roleComparisonChart').getContext('2d');
+        new Chart(roleComparisonCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Kinh Doanh & Giao Tiếp', 'Lập Trình & Thuật Toán', 'Hệ Thống & Hạ Tầng', 'Thống Kê & Học Máy', 'Trực Quan Hóa Dữ Liệu'],
+                datasets: [{
+                    label: 'Data Analyst',
+                    data: [8, 5, 3, 4, 9],
+                    backgroundColor: 'rgba(0, 240, 181, 0.2)',
+                    borderColor: '#00F0B5',
+                    pointBackgroundColor: '#00F0B5'
+                }, {
+                    label: 'Data Engineer',
+                    data: [4, 8, 9, 3, 5],
+                    backgroundColor: 'rgba(0, 224, 240, 0.2)',
+                    borderColor: '#00E0F0',
+                    pointBackgroundColor: '#00E0F0'
+                }, {
+                    label: 'Data Scientist',
+                    data: [6, 7, 6, 9, 7],
+                    backgroundColor: 'rgba(98, 0, 240, 0.2)',
+                    borderColor: '#6200F0',
+                    pointBackgroundColor: '#6200F0'
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                        pointLabels: { 
+                            color: '#e0e0e0',
+                            font: { size: 12 }
+                        },
+                        ticks: {
+                            color: '#1a1a2e',
+                            backdropColor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+
+        const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+        const salaryLabelsRaw = ['Fresher (0-1 năm)', 'Junior (1-3 năm)', 'Senior (3+ năm)'];
+        const salaryLabels = salaryLabelsRaw.map(label => wrapLabel(label, 16));
+
+        new Chart(salaryCtx, {
+            type: 'bar',
+            data: {
+                labels: salaryLabels,
+                datasets: [{
+                    label: 'Data Analyst (Min)',
+                    data: [8000000, 12500000, 25000000],
+                    backgroundColor: 'rgba(0, 240, 181, 0.5)',
+                    borderColor: '#00F0B5',
+                    stack: 'Analyst'
+                }, {
+                    label: 'Data Analyst (Max)',
+                    data: [15000000 - 8000000, 23000000 - 12500000, 47000000 - 25000000],
+                    backgroundColor: 'rgba(0, 240, 181, 0.8)',
+                    borderColor: '#00F0B5',
+                    stack: 'Analyst'
+                },{
+                    label: 'Data Engineer (Min)',
+                    data: [15000000, 20000000, 30000000],
+                    backgroundColor: 'rgba(0, 224, 240, 0.5)',
+                    borderColor: '#00E0F0',
+                    stack: 'Engineer'
+                }, {
+                    label: 'Data Engineer (Max)',
+                    data: [20000000 - 15000000, 30000000 - 20000000, 40000000 - 30000000],
+                    backgroundColor: 'rgba(0, 224, 240, 0.8)',
+                    borderColor: '#00E0F0',
+                    stack: 'Engineer'
+                },{
+                    label: 'Data Scientist (Min)',
+                    data: [11000000, 18000000, 35000000],
+                    backgroundColor: 'rgba(98, 0, 240, 0.5)',
+                    borderColor: '#6200F0',
+                    stack: 'Scientist'
+                }, {
+                    label: 'Data Scientist (Max)',
+                    data: [16000000 - 11000000, 26000000 - 18000000, 55000000 - 35000000],
+                    backgroundColor: 'rgba(98, 0, 240, 0.8)',
+                    borderColor: '#6200F0',
+                    stack: 'Scientist'
+                }]
+            },
+            options: {
+                ...defaultChartOptions,
+                plugins: {
+                     legend: { display: false },
+                     tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: function(context) {
+                                const datasetLabel = context.dataset.label || '';
+                                let value = context.raw;
+                                if (datasetLabel.includes('(Max)')) {
+                                    const minDatasetIndex = context.datasetIndex - 1;
+                                    const minValue = context.chart.data.datasets[minDatasetIndex].data[context.dataIndex];
+                                    const total = value + minValue;
+                                    return `${datasetLabel.replace(' (Max)', '')}: ${formatVnd(total)}`;
+                                } else {
+                                    return `${datasetLabel.replace(' (Min)', '')}: ${formatVnd(value)}`;
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { 
+                        stacked: true,
+                        ticks: {
+                            color: '#a0a0a0',
+                            callback: function(value) {
+                                return (value / 1000000) + ' Tr';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const skillsCtx = document.getElementById('skillsChart').getContext('2d');
+        new Chart(skillsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Data Analyst', 'Data Engineer', 'Data Scientist'],
+                datasets: [
+                    {
+                        label: 'SQL & Databases',
+                        data: [30, 35, 20],
+                        backgroundColor: '#F07000',
+                    },
+                    {
+                        label: 'Lập trình (Python/R)',
+                        data: [25, 30, 30],
+                        backgroundColor: '#F000B5',
+                    },
+                    {
+                        label: 'Hạ tầng & Cloud/Big Data',
+                        data: [5, 25, 15],
+                        backgroundColor: '#00E0F0',
+                    },
+                    {
+                        label: 'Thống kê & Học máy',
+                        data: [15, 5, 25],
+                        backgroundColor: '#6200F0',
+                    },
+                     {
+                        label: 'Trực quan hóa & Báo cáo',
+                        data: [25, 5, 10],
+                        backgroundColor: '#00F0B5',
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    },
+                    y: {
+                        stacked: true
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
